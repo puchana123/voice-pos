@@ -1,0 +1,1491 @@
+```html
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Live Speak POS & Inventory — ระบบออกบิลด้วยเสียงและจัดการสต็อก</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --surface: #ffffff;
+      --surface-subtle: #f8fafc;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --ink: #0f172a;
+      --muted: #475569;
+      --brand: #0f766e;
+      --brand-hover: #115e59;
+      --brand-soft: #f0fdfa;
+      --brand-border: #99f6e4;
+      --brand-ink: #ffffff;
+      --accent: #2563eb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --success: #16a34a;
+      --success-soft: #f0fdf4;
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --font: 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: var(--space-3) var(--space-6);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--brand);
+      color: var(--brand-ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .brand-subtitle {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .view-switcher-group {
+      display: inline-flex;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 4px;
+    }
+
+    .view-switch-btn {
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .view-switch-btn.active {
+      background: var(--brand);
+      color: var(--brand-ink);
+      box-shadow: var(--shadow);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+
+    .badge-brand { background: var(--brand-soft); color: var(--brand); border-color: var(--brand-border); }
+    .badge-neutral { background: var(--surface-subtle); color: var(--muted); border-color: var(--border); }
+    .badge-success { background: var(--success-soft); color: var(--success); border-color: #bbf7d0; }
+    .badge-warning { background: var(--warning-soft); color: var(--warning); border-color: #fde68a; }
+    .badge-danger { background: var(--danger-soft); color: var(--danger); border-color: #fecaca; }
+
+    /* Layout */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: var(--space-6);
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    @media (min-width: 960px) {
+      .workspace-grid { grid-template-columns: 7fr 5fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--space-6);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Voice Console */
+    .voice-console {
+      background: linear-gradient(180deg, var(--brand-soft) 0%, #ffffff 100%);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    .voice-top {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    @media (min-width: 640px) {
+      .voice-top { flex-direction: row; align-items: center; }
+    }
+
+    .mic-btn {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: none;
+      background: var(--brand);
+      color: var(--brand-ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.3);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .mic-btn:hover { background: var(--brand-hover); transform: translateY(-1px); }
+    .mic-btn.listening {
+      background: var(--danger);
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.35); }
+      70% { box-shadow: 0 0 0 14px rgba(220, 38, 38, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+
+    .voice-status-box { flex: 1; min-width: 0; }
+    .voice-state-label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--brand);
+      margin-bottom: 4px;
+    }
+    .voice-state-label.listening { color: var(--danger); }
+
+    .voice-command-input-row {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+
+    .input {
+      width: 100%;
+      font: inherit;
+      font-size: 0.9375rem;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+    }
+
+    .btn {
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn-primary { background: var(--brand); color: var(--brand-ink); }
+    .btn-primary:hover { background: var(--brand-hover); }
+    .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--border-strong); }
+    .btn-secondary:hover { background: var(--surface-subtle); }
+    .btn-danger-outline { background: var(--surface); color: var(--danger); border-color: #fecaca; }
+    .btn-danger-outline:hover { background: var(--danger-soft); }
+    .btn-sm { padding: 6px 10px; font-size: 0.8125rem; }
+
+    .quick-phrases {
+      margin-top: var(--space-4);
+      padding-top: var(--space-3);
+      border-top: 1px dashed var(--brand-border);
+    }
+
+    .quick-phrases-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: var(--space-2);
+      display: block;
+    }
+
+    .chip-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .chip-btn {
+      font: inherit;
+      font-size: 0.8125rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--brand-border);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .chip-btn:hover { background: var(--brand-soft); border-color: var(--brand); }
+
+    .ai-response-bar {
+      margin-top: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border-left: 4px solid var(--brand);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    /* Tabs & Tables */
+    .tabs {
+      display: flex;
+      gap: var(--space-2);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      font: inherit;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      background: var(--surface);
+    }
+
+    th {
+      background: var(--surface-subtle);
+      color: var(--muted);
+      font-weight: 600;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .sku-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      background: var(--surface-subtle);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .add-product-form {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: var(--space-3);
+      align-items: end;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    /* Live Bill & Payment Modes */
+    .bill-card { position: sticky; top: 88px; }
+    .payment-mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--surface-subtle);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      margin-bottom: var(--space-3);
+    }
+
+    .mode-btn {
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .mode-btn.active-cash { background: var(--surface); color: var(--brand); border-color: var(--brand-border); box-shadow: var(--shadow); }
+    .mode-btn.active-credit { background: var(--warning-soft); color: var(--warning); border-color: #fde68a; box-shadow: var(--shadow); }
+
+    .debtor-box {
+      background: var(--warning-soft);
+      border: 1px solid #fde68a;
+      border-radius: var(--radius-sm);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .debtor-quick-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .debtor-chip {
+      font: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid #fcd34d;
+      background: #ffffff;
+      color: #92400e;
+      cursor: pointer;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .kpi-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3) var(--space-4);
+    }
+    .kpi-card.kpi-credit { background: var(--warning-soft); border-color: #fde68a; }
+    .kpi-card.kpi-cash { background: var(--success-soft); border-color: #bbf7d0; }
+    .kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+    .kpi-val { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    .debtor-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .debtor-card {
+      background: var(--surface);
+      border: 1px solid #fde68a;
+      border-left: 4px solid var(--warning);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    .bill-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4); }
+    .bill-items-list { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: var(--space-4); max-height: 340px; overflow-y: auto; }
+    .bill-item { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3); border-bottom: 1px solid var(--border); }
+    .bill-item:last-child { border-bottom: none; }
+    .bill-item-title { font-weight: 600; font-size: 0.9375rem; margin: 0; }
+    .bill-item-sub { font-size: 0.75rem; color: var(--muted); }
+
+    .qty-controls { display: inline-flex; align-items: center; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; }
+    .qty-btn { border: none; background: var(--surface-subtle); width: 28px; height: 28px; cursor: pointer; font-weight: 700; }
+    .qty-val { padding: 0 10px; font-size: 0.875rem; font-weight: 600; }
+    .empty-state { text-align: center; padding: var(--space-8) var(--space-4); color: var(--muted); font-size: 0.875rem; }
+
+    .bill-summary { background: var(--surface-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-4); margin-bottom: var(--space-4); }
+    .summary-row { display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: var(--space-2); color: var(--muted); }
+    .summary-row.total { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-strong); font-size: 1.125rem; font-weight: 700; color: var(--ink); margin-bottom: 0; }
+    .bill-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .bill-actions .btn-primary { grid-column: span 2; padding: 12px; font-size: 1rem; }
+
+    /* Customer-Facing Display (CFD) */
+    .cfd-banner { background: #0f172a; color: #ffffff; border-radius: var(--radius-lg); padding: var(--space-6); border: 1px solid #334155; margin-bottom: var(--space-6); }
+    .cfd-top-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px solid #334155; margin-bottom: var(--space-6); }
+    .cfd-store-title { font-size: 1.35rem; font-weight: 700; margin: 0; }
+    .cfd-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-6); }
+    @media (min-width: 860px) { .cfd-grid { grid-template-columns: 7fr 5fr; } }
+    .cfd-items-panel { background: #1e293b; border: 1px solid #334155; border-radius: var(--radius); padding: var(--space-6); display: flex; flex-direction: column; justify-content: space-between; min-height: 380px; }
+    .cfd-item-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: 12px 0; border-bottom: 1px solid #334155; }
+    .cfd-item-name { font-weight: 600; color: #f8fafc; }
+    .cfd-item-qty { background: #0f766e; color: #ffffff; padding: 3px 12px; border-radius: 999px; font-size: 0.875rem; font-weight: 700; }
+    .cfd-item-price { font-weight: 700; font-size: 1.15rem; color: #5eead4; min-width: 90px; text-align: right; }
+    .cfd-giant-total-box { margin-top: var(--space-4); padding-top: var(--space-4); border-top: 2px solid #475569; }
+    .cfd-sub-row { display: flex; justify-content: space-between; font-size: 0.95rem; color: #cbd5e1; margin-bottom: 6px; }
+    .cfd-net-row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
+    .cfd-net-label { font-size: 1.15rem; font-weight: 700; color: #f8fafc; }
+    .cfd-net-amount { font-size: 2.5rem; font-weight: 700; color: #2dd4bf; }
+    .cfd-qr-panel { background: #ffffff; color: #0f172a; border-radius: var(--radius); padding: var(--space-6); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; }
+    .promptpay-header { width: 100%; background: #1e3a8a; color: #ffffff; padding: 10px 16px; border-radius: var(--radius-sm); font-weight: 700; margin-bottom: var(--space-3); }
+    .qr-box { padding: 14px; background: #ffffff; border: 2px solid #cbd5e1; border-radius: var(--radius); margin: var(--space-2) 0; display: inline-flex; }
+
+    /* Login & Cloud Sync Modal */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.74);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      z-index: 60;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 35px rgba(15, 23, 42, 0.25);
+      max-width: 540px;
+      width: 100%;
+      padding: var(--space-6);
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .login-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .radio-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+      cursor: pointer;
+      font-size: 0.8125rem;
+      margin-bottom: 8px;
+    }
+
+    .sync-status-msg {
+      font-size: 0.8125rem;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-3);
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+    }
+    .sync-status-msg.error { background: var(--danger-soft); color: var(--danger); border-color: #fecaca; }
+    .sync-status-msg.success { background: var(--success-soft); color: var(--success); border-color: #bbf7d0; }
+
+    /* Receipt Modal & Print */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); display: none; align-items: center; justify-content: center; padding: var(--space-4); z-index: 50; }
+    .modal-backdrop.open { display: flex; }
+    .receipt-modal { background: var(--surface); border-radius: var(--radius); max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; padding: var(--space-6); }
+    .receipt-paper { background: #fafafa; border: 1px dashed var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-4); margin: var(--space-4) 0; }
+    .print-format-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-3); background: var(--surface-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .format-btn { font: inherit; font-size: 0.8125rem; font-weight: 600; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; }
+    .format-btn.active { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+    .invoice-sheet { background: #ffffff; color: #0f172a; border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; font-size: 0.8125rem; }
+    .invoice-sheet.format-80mm { max-width: 310px; margin: 0 auto; }
+    .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 10px; }
+    .invoice-copy-badge { font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border: 1px solid #0f172a; border-radius: 4px; height: fit-content; }
+    .invoice-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+    .invoice-table th, .invoice-table td { padding: 5px 6px; border-bottom: 1px solid #cbd5e1; }
+    .invoice-totals { margin-top: 8px; display: flex; flex-direction: column; align-items: flex-end; }
+    .invoice-signatures { display: flex; justify-content: space-between; gap: 24px; margin-top: 16px; padding-top: 8px; font-size: 0.75rem; text-align: center; }
+    .sig-box { flex: 1; }
+    .sig-line { border-bottom: 1px dotted #475569; height: 22px; margin-bottom: 4px; }
+    .cut-divider { border-top: 1px dashed #64748b; margin: 14px 0; text-align: center; font-size: 0.75rem; color: #475569; }
+
+    @media print {
+      @page { margin: 8mm; }
+      body { background: #ffffff !important; }
+      .app-header, main.container, .login-overlay, .no-print { display: none !important; }
+      .modal-backdrop { position: static !important; display: block !important; background: transparent !important; padding: 0 !important; }
+      .receipt-modal { max-width: 100% !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
+      .receipt-paper { border: none !important; padding: 0 !important; margin: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-icon" aria-hidden="true">🎙️</div>
+        <div>
+          <h1 class="brand-title">AI Live Speak POS &amp; Inventory</h1>
+          <p class="brand-subtitle">ระบบออกบิลด้วยเสียง เชื่อมต่อ Google Sheets แบบปลอดภัย (PIN Lock)</p>
+        </div>
+      </div>
+
+      <div class="header-meta">
+        <div class="view-switcher-group" role="group" aria-label="สลับมุมมองหน้าจอ">
+          <button type="button" id="switchCashierViewBtn" class="view-switch-btn active">🧑‍💼 จอแคชเชียร์</button>
+          <button type="button" id="switchCustomerViewBtn" class="view-switch-btn">🖥️ จอลูกค้า + QR</button>
+        </div>
+        <span class="badge badge-neutral" id="cloudSyncBadge">โหมดข้อมูลตัวอย่าง (ยังไม่เชื่อม Sheets)</span>
+        <button type="button" id="syncNowHeaderBtn" class="btn btn-secondary btn-sm" hidden>🔄 ซิงค์ข้อมูล</button>
+        <button type="button" id="openLoginSettingsBtn" class="btn btn-secondary btn-sm">🔐 ตั้งค่า / ล็อกหน้าจอ</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Voice Command Console -->
+    <section class="voice-console">
+      <div class="voice-top">
+        <button type="button" id="micToggleBtn" class="mic-btn" title="แตะเพื่อพูดสั่งรายการสินค้า">🎙️</button>
+        <div class="voice-status-box">
+          <div id="voiceStateLabel" class="voice-state-label">แตะปุ่มไมโครโฟนเพื่อพูดสั่งรายการสินค้า</div>
+          <form id="voiceCommandForm" class="voice-command-input-row">
+            <input type="text" id="commandInput" class="input" placeholder='พูดหรือพิมพ์ เช่น "กาแฟคั่วบด 2 ถุง กับแก้วดริป 1 ใบ ลดให้ 20 บาท"' autocomplete="off">
+            <button type="submit" class="btn btn-primary">ประมวลผลคำสั่ง</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="quick-phrases">
+        <span class="quick-phrases-label">ชุดคำสั่งเสียงตัวอย่าง:</span>
+        <div class="chip-list">
+          <button type="button" class="chip-btn" data-phrase="กาแฟคั่วบด 2 ถุง กับแก้วดริป 1 ใบ ลดให้ 20 บาท">"กาแฟคั่วบด 2 ถุง กับแก้วดริป 1 ใบ ลดให้ 20 บาท"</button>
+          <button type="button" class="chip-btn" data-phrase="กาแฟคั่วบด 3 ถุง บิลเชื่อ เจ๊หมวย">"กาแฟคั่วบด 3 ถุง บิลเชื่อ เจ๊หมวย"</button>
+          <button type="button" class="chip-btn" data-phrase="เคลียร์บิลเชื่อ เจ๊หมวย">"เคลียร์บิลเชื่อ เจ๊หมวย"</button>
+          <button type="button" class="chip-btn" data-phrase="ยืนยันออกบิล">"ยืนยันออกบิล"</button>
+          <button type="button" class="chip-btn" data-phrase="พิมพ์บิล">"พิมพ์บิล"</button>
+        </div>
+      </div>
+
+      <div class="ai-response-bar">
+        <div><strong>AI Live Speak:</strong> <span id="aiResponseText">พร้อมรับคำสั่งค่ะ</span></div>
+        <button type="button" id="speakToggleBtn" class="btn btn-secondary btn-sm">🔊 เสียงตอบรับ: เปิด</button>
+      </div>
+    </section>
+
+    <!-- Customer Display Section -->
+    <section id="customerDisplaySection" hidden>
+      <div class="cfd-banner">
+        <div class="cfd-top-bar">
+          <div>
+            <h2 class="cfd-store-title">🛒 หน้าจอแสดงผลฝั่งลูกค้า (Customer Display)</h2>
+            <p style="margin:4px 0 0; font-size:0.85rem; color:#94a3b8;">แสดงรายการบิลปัจจุบันและ QR Code พร้อมเพย์ตามยอดชำระจริง</p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span class="badge badge-brand" id="cfdBillBadge">BILL-003</span>
+            <span class="badge badge-success" id="cfdPaymentStatusBadge">💵 ชำระเงินสด / โอน</span>
+            <button type="button" id="cfdBackToCashierBtn" class="btn btn-secondary btn-sm">← กลับหน้าจอแคชเชียร์</button>
+          </div>
+        </div>
+        <div class="cfd-grid">
+          <div class="cfd-items-panel">
+            <div>
+              <div style="display:flex; justify-content:space-between; color:#94a3b8; font-size:0.875rem; margin-bottom:10px;">
+                <span>รายการสินค้า</span>
+                <span id="cfdTotalItemsLabel">0 ชิ้น</span>
+              </div>
+              <div id="cfdItemsList"></div>
+            </div>
+            <div class="cfd-giant-total-box">
+              <div class="cfd-sub-row"><span>ยอดรวมก่อนลด</span><span id="cfdSubtotal">฿0</span></div>
+              <div class="cfd-sub-row"><span>ส่วนลด</span><span id="cfdDiscount">-฿0</span></div>
+              <div class="cfd-net-row">
+                <span class="cfd-net-label" id="cfdNetLabel">ยอดชำระสุทธิ</span>
+                <span class="cfd-net-amount" id="cfdNetTotal">฿0.00</span>
+              </div>
+            </div>
+          </div>
+          <div class="cfd-qr-panel">
+            <div style="width:100%;">
+              <div class="promptpay-header">THAI QR PAYMENT • พร้อมเพย์</div>
+              <div style="display:flex; gap:6px; align-items:center; justify-content:center; margin-bottom:6px;">
+                <label for="promptPayIdInput" style="font-size:0.75rem; font-weight:600;">พร้อมเพย์ร้าน:</label>
+                <input type="text" id="promptPayIdInput" class="input" value="081-234-5678" style="width:145px; padding:4px 8px; text-align:center;">
+              </div>
+            </div>
+            <div>
+              <div class="qr-box" id="cfdQrSvgWrap"></div>
+              <div style="font-size:1.1rem; font-weight:700; color:var(--brand);" id="cfdQrAmountCaption">สแกนจ่ายยอด ฿0.00</div>
+              <div style="font-size:0.75rem; color:var(--muted);" id="cfdPayloadPreview"></div>
+            </div>
+            <button type="button" id="cfdConfirmBtn" class="btn btn-primary" style="width:100%; margin-top:12px;">✓ รับเงินเรียบร้อย / ออกบิลทันที</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cashier Workspace Grid -->
+    <div class="workspace-grid" id="cashierWorkspaceGrid">
+      <div class="card">
+        <div class="tabs">
+          <button type="button" class="tab-btn active" data-tab="products" id="tabProductsBtn">📦 แท็บ Products</button>
+          <button type="button" class="tab-btn" data-tab="bills" id="tabBillsBtn">📒 แท็บ Bills &amp; ลูกหนี้ <span class="badge badge-warning" id="unpaidCountBadge">1 ค้างชำระ</span></button>
+          <button type="button" class="tab-btn" data-tab="transactions" id="tabTransactionsBtn">📑 แท็บ Transactions</button>
+        </div>
+
+        <div id="panelProducts">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>SKU</th><th>ชื่อสินค้า</th><th>หมวดหมู่</th><th class="num">ราคาขาย</th><th class="num">คงเหลือ</th><th>สถานะ</th><th class="num">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody"></tbody>
+            </table>
+          </div>
+          <form id="addProductForm" class="add-product-form">
+            <div><label class="field-label">SKU</label><input type="text" id="newSku" class="input" placeholder="CF-006" required></div>
+            <div><label class="field-label">ชื่อสินค้า</label><input type="text" id="newName" class="input" placeholder="น้ำเชื่อมวานิลลา" required></div>
+            <div><label class="field-label">ราคาขาย</label><input type="number" id="newPrice" class="input" min="1" required></div>
+            <div><label class="field-label">สต็อกตั้งต้น</label><input type="number" id="newStock" class="input" min="0" required></div>
+            <div><button type="submit" class="btn btn-secondary" style="width:100%;">+ เพิ่มสินค้า</button></div>
+          </form>
+        </div>
+
+        <div id="panelBills" hidden>
+          <div class="section-header">
+            <h3 class="section-title">สรุปยอดตามไตรมาส &amp; ลูกหนี้ค้างชำระ</h3>
+            <select id="quarterFilterSelect" class="input" style="width:auto; padding:6px 10px;">
+              <option value="ALL">ทุกไตรมาส</option>
+            </select>
+          </div>
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-label">ยอดขายรวมตามบิล</div><div class="kpi-val" id="kpiTotalSales">฿0</div></div>
+            <div class="kpi-card kpi-cash"><div class="kpi-label">เงินสดรับจริง</div><div class="kpi-val" id="kpiCashReceived" style="color:var(--success);">฿0</div></div>
+            <div class="kpi-card kpi-credit"><div class="kpi-label">ยอดค้างชำระรวม</div><div class="kpi-val" id="kpiUnpaidTotal" style="color:var(--warning);">฿0</div></div>
+          </div>
+          <div id="debtorSummaryGrid" class="debtor-summary-grid"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>เลขบิล</th><th>วัน-เวลา</th><th>ไตรมาส</th><th class="num">ยอดสุทธิ</th><th>สถานะ</th><th>ผู้เชื่อ</th><th>วันที่จ่าย</th><th class="num">จัดการ</th></tr>
+              </thead>
+              <tbody id="billsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="panelTransactions" hidden>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>รหัส</th><th>เวลา</th><th>ประเภท</th><th>SKU</th><th>รายการ</th><th class="num">จำนวน</th><th class="num">ยอดเงิน</th><th>อ้างอิง</th></tr>
+              </thead>
+              <tbody id="transactionsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card bill-card">
+        <div class="section-header">
+          <h2 class="section-title">🧾 พรีวิวบิลปัจจุบัน</h2>
+          <span class="badge badge-brand" id="billNumberBadge">BILL-003</span>
+        </div>
+
+        <div class="payment-mode-switch">
+          <button type="button" id="modeCashBtn" class="mode-btn active-cash">💵 เงินสด / โอน</button>
+          <button type="button" id="modeCreditBtn" class="mode-btn">📝 บิลเงินเชื่อ (ค้างชำระ)</button>
+        </div>
+
+        <div id="debtorBox" class="debtor-box" hidden>
+          <label class="field-label" style="color:#92400e;">ระบุชื่อผู้เชื่อสินค้า (Debtor_Name)</label>
+          <input type="text" id="debtorNameInput" class="input" placeholder="เช่น เจ๊หมวย, เฮียศักดิ์">
+          <div class="debtor-quick-list">
+            <button type="button" class="debtor-chip" data-debtor="เจ๊หมวย">เจ๊หมวย</button>
+            <button type="button" class="debtor-chip" data-debtor="เฮียศักดิ์">เฮียศักดิ์</button>
+          </div>
+        </div>
+
+        <div class="bill-meta-grid">
+          <div>
+            <label class="field-label">สถานะผู้ซื้อ</label>
+            <input type="text" id="customerNameInput" class="input" value="ลูกค้าทั่วไป (ไม่เก็บประวัติ)" readonly>
+          </div>
+          <div>
+            <label class="field-label">ส่วนลดท้ายบิล (บาท)</label>
+            <input type="number" id="discountInput" class="input" min="0" value="0">
+          </div>
+        </div>
+
+        <div id="billItemsContainer" class="bill-items-list"></div>
+
+        <div class="bill-summary">
+          <div class="summary-row"><span>รวมจำนวน</span><span id="billTotalQty">0 ชิ้น</span></div>
+          <div class="summary-row"><span>ยอดรวมก่อนลด</span><span id="billSubtotal">฿0</span></div>
+          <div class="summary-row"><span>ส่วนลด</span><span id="billDiscount">-฿0</span></div>
+          <div class="summary-row total"><span>ยอดชำระสุทธิ</span><span id="billNetTotal">฿0</span></div>
+        </div>
+
+        <div class="bill-actions">
+          <button type="button" id="confirmBillBtn" class="btn btn-primary">✓ ยืนยันออกบิลและตัดสต็อก</button>
+          <button type="button" id="readBillBtn" class="btn btn-secondary">🔊 ทวนยอดบิล</button>
+          <button type="button" id="clearBillBtn" class="btn btn-danger-outline">ล้างบิล</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Login & Cloud Sync Modal -->
+  <div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true">
+    <div class="login-card no-print">
+      <div class="login-header">
+        <div class="brand-icon">🔐</div>
+        <div>
+          <h2 style="margin:0; font-size:1.1rem;">เข้าสู่ระบบ &amp; เชื่อมฐานข้อมูล Google Sheets</h2>
+          <p style="margin:2px 0 0; font-size:0.75rem; color:var(--muted);">ปลอดภัยสำหรับ GitHub Pages (เก็บกุญแจไว้ในเครื่องคุณเท่านั้น)</p>
+        </div>
+      </div>
+
+      <div id="loginStatusBanner" class="sync-status-msg" hidden></div>
+
+      <form id="loginSyncForm">
+        <div style="margin-bottom:12px;">
+          <label class="field-label" for="gasWebAppUrlInput">1. ลิงก์ Google Apps Script Web App URL (ลงท้ายด้วย /exec)</label>
+          <input type="url" id="gasWebAppUrlInput" class="input" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label class="field-label" for="secretPinInput">2. รหัสผ่านส่วนตัว (SECRET_KEY / PIN ที่ตั้งไว้ใน Code.gs)</label>
+          <input type="password" id="secretPinInput" class="input" placeholder="เช่น POS-2026-SECRET">
+        </div>
+
+        <div style="margin:12px 0;">
+          <span class="field-label">3. รูปแบบการจำรหัสในเครื่องนี้:</span>
+          <label class="radio-card">
+            <input type="radio" name="persistMode" value="REMEMBER" checked>
+            <div>
+              <strong>จำรหัสในเครื่องนี้อัตโนมัติ (Remember Device)</strong>
+              <div style="color:var(--muted);">เปิดเว็บครั้งหน้าเข้าขายของได้ทันทีไม่ต้องกรอกรหัสซ้ำ</div>
+            </div>
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="persistMode" value="SESSION">
+            <div>
+              <strong>ถามรหัส PIN ทุกครั้งที่เปิดหน้าเว็บใหม่ (Session Lock)</strong>
+              <div style="color:var(--muted);">จำเฉพาะ URL แต่ต้องกรอก PIN ทุกครั้งที่เปิดเบราว์เซอร์ใหม่</div>
+            </div>
+          </label>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button type="submit" id="connectSheetsSubmitBtn" class="btn btn-primary" style="width:100%;">🔐 เข้าสู่ระบบและซิงค์ข้อมูลจาก Google Sheets</button>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="useDemoModeBtn" class="btn btn-secondary" style="flex:1;">🧪 ทดลองใช้โหมดข้อมูลตัวอย่าง</button>
+            <button type="button" id="clearSavedCredentialsBtn" class="btn btn-danger-outline btn-sm">ล้างค่ารหัสที่จำไว้</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Printable Receipt Modal -->
+  <div class="modal-backdrop" id="receiptModal">
+    <div class="receipt-modal">
+      <div class="section-header no-print">
+        <h3 class="section-title">✅ ออกบิลและตัดสต็อกสำเร็จ</h3>
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="format-btn" data-print-format="a5">📄 A5</button>
+          <button type="button" class="format-btn active" data-print-format="a4-dup">📑 A4 (ต้นฉบับ+สำเนา)</button>
+          <button type="button" class="format-btn" data-print-format="80mm">🧾 สลิป 80mm</button>
+        </div>
+      </div>
+      <div id="receiptContent" class="receipt-paper"></div>
+      <div class="no-print" style="display:flex; gap:8px; justify-content:flex-end;">
+        <button type="button" id="printReceiptBtn" class="btn btn-secondary">🖨️ สั่งพิมพ์ใบเสร็จ (Print)</button>
+        <button type="button" id="closeReceiptBtn" class="btn btn-primary">ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const products = [
+      { sku: 'CF-001', name: 'กาแฟคั่วบด', aliases: ['กาแฟคั่วบด', 'กาแฟบด', 'กาแฟ'], category: 'เมล็ดกาแฟ', unit: 'ถุง', cost: 160, price: 250, minStock: 5 },
+      { sku: 'CF-002', name: 'เมล็ดกาแฟอาราบิก้า', aliases: ['เมล็ดกาแฟอาราบิก้า', 'อาราบิก้า', 'เมล็ดกาแฟ'], category: 'เมล็ดกาแฟ', unit: 'ถุง', cost: 220, price: 350, minStock: 5 },
+      { sku: 'EQ-001', name: 'แก้วดริป', aliases: ['แก้วดริป', 'ดริปเปอร์', 'แก้ว'], category: 'อุปกรณ์', unit: 'ใบ', cost: 200, price: 350, minStock: 3 },
+      { sku: 'EQ-002', name: 'กระดาษกรอง', aliases: ['กระดาษกรอง', 'กระดาษดริป'], category: 'อุปกรณ์', unit: 'กล่อง', cost: 65, price: 120, minStock: 8 }
+    ];
+
+    const transactions = [
+      { id: 'TX-1001', time: '09:00', type: 'IN', sku: 'CF-001', name: 'กาแฟคั่วบด', qty: 20, unitPrice: 160, actor: 'ยอดยกมา' },
+      { id: 'TX-1002', time: '09:00', type: 'IN', sku: 'CF-002', name: 'เมล็ดกาแฟอาราบิก้า', qty: 15, unitPrice: 220, actor: 'ยอดยกมา' },
+      { id: 'TX-1003', time: '09:00', type: 'IN', sku: 'EQ-001', name: 'แก้วดริป', qty: 10, unitPrice: 200, actor: 'ยอดยกมา' },
+      { id: 'TX-1004', time: '09:00', type: 'IN', sku: 'EQ-002', name: 'กระดาษกรอง', qty: 25, unitPrice: 65, actor: 'ยอดยกมา' },
+      { id: 'TX-1005', time: '11:30', type: 'OUT', sku: 'CF-001', name: 'กาแฟคั่วบด', qty: 2, unitPrice: 250, actor: 'BILL-001 (บิลเชื่อ - เจ๊หมวย)' }
+    ];
+
+    const bills = [
+      { billNo: 'BILL-001', dateStr: '09/11/2026', timeStr: '11:30', subtotal: 500, discount: 0, netTotal: 500, paymentStatus: 'UNPAID', debtorName: 'เจ๊หมวย', paidDate: '-', quarterYear: 'Q4-2026', items: [{ sku: 'CF-001', name: 'กาแฟคั่วบด', unit: 'ถุง', qty: 2, price: 250, lineTotal: 500 }] }
+    ];
+
+    let currentBillItems = [];
+    let billCounter = 2;
+    let currentPaymentMode = 'CASH';
+    let ttsEnabled = true;
+    let lastBillData = null;
+    let selectedPrintFormat = 'a4-dup';
+
+    let activeScriptUrl = '';
+    let activeSecretPin = '';
+    let isCloudConnected = false;
+
+    function getProductStock(sku) {
+      return transactions.reduce((sum, tx) => tx.sku !== sku ? sum : (tx.type === 'IN' ? sum + tx.qty : sum - tx.qty), 0);
+    }
+
+    function speakAndReply(message) {
+      document.getElementById('aiResponseText').textContent = message;
+      if (!ttsEnabled || !('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(message);
+        utter.lang = 'th-TH';
+        window.speechSynthesis.speak(utter);
+      } catch (e) {}
+    }
+
+    async function callGoogleSheetsApi(action, extraPayload = {}) {
+      const response = await fetch(activeScriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ apiKey: activeSecretPin, action, ...extraPayload })
+      });
+      const res = await response.json();
+      if (res.status !== 'ok') throw new Error(res.message || 'รหัส PIN ไม่ถูกต้อง');
+      return res;
+    }
+
+    async function syncFromGoogleSheets() {
+      const banner = document.getElementById('loginStatusBanner');
+      try {
+        const data = await callGoogleSheetsApi('LOAD_DATA');
+        isCloudConnected = true;
+        if (Array.isArray(data.products) && data.products.length > 0) {
+          products.length = 0;
+          data.products.forEach(r => {
+            if (!r[0]) return;
+            products.push({
+              sku: String(r[0]).trim(),
+              name: String(r[1] || r[0]).trim(),
+              aliases: String(r[2] || r[1]).split(',').map(s => s.trim()).filter(Boolean),
+              category: 'คลังสินค้า',
+              unit: String(r[3] || 'ชิ้น'),
+              cost: Number(r[4]) || 0,
+              price: Number(r[5]) || 0,
+              minStock: Number(r[7]) || 3
+            });
+          });
+        }
+        if (Array.isArray(data.transactions) && data.transactions.length > 0) {
+          transactions.length = 0;
+          data.transactions.forEach((r, idx) => {
+            if (!r[3]) return;
+            transactions.push({
+              id: String(r[0] || `TX-${1001 + idx}`),
+              time: String(r[1] || ''),
+              type: String(r[2]).toUpperCase() === 'OUT' ? 'OUT' : 'IN',
+              sku: String(r[3]).trim(),
+              name: String(r[4] || ''),
+              qty: Number(r[5]) || 0,
+              unitPrice: Number(r[6]) || 0,
+              actor: String(r[7] || '')
+            });
+          });
+        }
+        if (Array.isArray(data.bills)) {
+          bills.length = 0;
+          data.bills.forEach(r => {
+            if (!r[0]) return;
+            const dt = String(r[1] || '').split(' ');
+            const statusRaw = String(r[3] || '');
+            bills.push({
+              billNo: String(r[0]),
+              dateStr: dt[0] || '-',
+              timeStr: dt[1] || '',
+              subtotal: Number(r[2]) || 0,
+              discount: 0,
+              netTotal: Number(r[2]) || 0,
+              paymentStatus: statusRaw.includes('ค้าง') || statusRaw === 'UNPAID' ? 'UNPAID' : 'PAID',
+              debtorName: r[4] === 'ลูกค้าทั่วไป' ? '' : String(r[4] || ''),
+              paidDate: String(r[5] || '-'),
+              quarterYear: String(r[6] || 'Q4-2026'),
+              items: []
+            });
+          });
+          billCounter = bills.length + 1;
+        }
+        document.getElementById('cloudSyncBadge').className = 'badge badge-success';
+        document.getElementById('cloudSyncBadge').textContent = '☁️ เชื่อมต่อ Google Sheets แล้ว';
+        document.getElementById('syncNowHeaderBtn').hidden = false;
+        document.getElementById('loginOverlay').hidden = true;
+        renderProducts();
+        renderBillsAndDebtors();
+        renderTransactions();
+        renderBill();
+        speakAndReply('เข้าสู่ระบบและซิงค์ข้อมูลจาก Google Sheets สำเร็จค่ะ');
+      } catch (err) {
+        banner.hidden = false;
+        banner.className = 'sync-status-msg error';
+        banner.textContent = '❌ ' + err.message;
+      }
+    }
+
+    function crc16Ccitt(str) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
+
+    function formatTlv(id, val) {
+      return `${id}${String(val.length).padStart(2, '0')}${val}`;
+    }
+
+    function buildPromptPayPayload(rawId, amount) {
+      const digits = (rawId || '').replace(/\D/g, '');
+      const target = digits.length === 13
+        ? formatTlv('02', digits)
+        : formatTlv('01', digits.length === 10 ? '0066' + digits.slice(1) : '0066812345678');
+      const merchant = formatTlv('00', 'A000000677010111') + target;
+      const payload = formatTlv('00', '01') + formatTlv('01', amount > 0 ? '12' : '11') +
+        formatTlv('29', merchant) + formatTlv('53', '764') +
+        (amount > 0 ? formatTlv('54', amount.toFixed(2)) : '') + formatTlv('58', 'TH') + '6304';
+      return payload + crc16Ccitt(payload);
+    }
+
+    function generateQrSvg(payloadString, sizePx = 190) {
+      const gridSize = 25;
+      let rects = '';
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          const inFinder = (r < 7 && c < 7) || (r < 7 && c >= gridSize - 7) || (r >= gridSize - 7 && c < 7);
+          let bit = false;
+          if (inFinder) {
+            const rr = r >= gridSize - 7 ? r - (gridSize - 7) : r;
+            const cc = c >= gridSize - 7 ? c - (gridSize - 7) : c;
+            bit = (rr === 0 || rr === 6 || cc === 0 || cc === 6) || (rr >= 2 && rr <= 4 && cc >= 2 && cc <= 4);
+          } else {
+            const ch = payloadString.charCodeAt((r * gridSize + c) % payloadString.length);
+            bit = ((ch + r * 13 + c * 29) & 1) === 1;
+          }
+          if (bit) rects += `<rect x="${c}" y="${r}" width="1" height="1" fill="#0f172a"/>`;
+        }
+      }
+      return `<svg width="${sizePx}" height="${sizePx}" viewBox="0 0 ${gridSize} ${gridSize}" shape-rendering="crispEdges"><rect width="${gridSize}" height="${gridSize}" fill="#ffffff"/>${rects}</svg>`;
+    }
+
+    function renderCustomerDisplay() {
+      const discount = Math.max(0, Number(document.getElementById('discountInput').value) || 0);
+      const totalQty = currentBillItems.reduce((a, i) => a + i.qty, 0);
+      const subtotal = currentBillItems.reduce((a, i) => {
+        const p = products.find(x => x.sku === i.sku);
+        return a + (p ? p.price * i.qty : 0);
+      }, 0);
+      const net = Math.max(0, subtotal - discount);
+
+      document.getElementById('cfdTotalItemsLabel').textContent = `${totalQty} ชิ้น`;
+      document.getElementById('cfdSubtotal').textContent = `฿${subtotal.toLocaleString()}`;
+      document.getElementById('cfdDiscount').textContent = `-฿${discount.toLocaleString()}`;
+      document.getElementById('cfdNetTotal').textContent = `฿${net.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+
+      const listEl = document.getElementById('cfdItemsList');
+      if (currentBillItems.length === 0) {
+        listEl.innerHTML = `<div style="padding:36px; text-align:center; color:#94a3b8;">กำลังรอรายการสินค้า...</div>`;
+      } else {
+        listEl.innerHTML = currentBillItems.map((item, idx) => {
+          const p = products.find(x => x.sku === item.sku);
+          return `<div class="cfd-item-row"><span class="cfd-item-name">${idx + 1}. ${p.name}</span><span class="cfd-item-qty">x${item.qty} ${p.unit}</span><span class="cfd-item-price">฿${(p.price * item.qty).toLocaleString()}</span></div>`;
+        }).join('');
+      }
+
+      const ppId = document.getElementById('promptPayIdInput').value.trim();
+      const payload = buildPromptPayPayload(ppId, net);
+      document.getElementById('cfdQrSvgWrap').innerHTML = generateQrSvg(payload, 190);
+      document.getElementById('cfdQrAmountCaption').textContent = `สแกนจ่ายยอด ฿${net.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+      document.getElementById('cfdPayloadPreview').textContent = `พร้อมเพย์: ${ppId}`;
+    }
+
+    function setViewMode(mode) {
+      const isCustomer = mode === 'CUSTOMER';
+      document.getElementById('switchCashierViewBtn').classList.toggle('active', !isCustomer);
+      document.getElementById('switchCustomerViewBtn').classList.toggle('active', isCustomer);
+      document.getElementById('customerDisplaySection').hidden = !isCustomer;
+      document.getElementById('cashierWorkspaceGrid').hidden = isCustomer;
+      if (isCustomer) renderCustomerDisplay();
+    }
+
+    function setPaymentMode(mode, debtorPrefill = '') {
+      currentPaymentMode = mode;
+      const isCredit = mode === 'CREDIT';
+      document.getElementById('modeCashBtn').classList.toggle('active-cash', !isCredit);
+      document.getElementById('modeCreditBtn').classList.toggle('active-credit', isCredit);
+      document.getElementById('debtorBox').hidden = !isCredit;
+      if (isCredit && debtorPrefill) document.getElementById('debtorNameInput').value = debtorPrefill;
+      const name = document.getElementById('debtorNameInput').value.trim();
+      document.getElementById('customerNameInput').value = isCredit ? `บิลเชื่อ: ${name || 'ระบุชื่อผู้เชื่อ'}` : 'ลูกค้าทั่วไป (ไม่เก็บประวัติ)';
+      renderCustomerDisplay();
+    }
+
+    function renderProducts() {
+      const tbody = document.getElementById('productsTableBody');
+      tbody.innerHTML = products.map(p => {
+        const stock = getProductStock(p.sku);
+        return `<tr>
+          <td><span class="sku-code">${p.sku}</span></td>
+          <td><strong>${p.name}</strong></td>
+          <td>${p.category}</td>
+          <td class="num">฿${p.price.toLocaleString()}</td>
+          <td class="num"><strong>${stock} ${p.unit}</strong></td>
+          <td>${stock <= p.minStock ? '<span class="badge badge-warning">ใกล้หมด</span>' : '<span class="badge badge-success">พร้อมขาย</span>'}</td>
+          <td class="num"><button type="button" class="btn btn-secondary btn-sm" data-add="${p.sku}">+ เพิ่มลงบิล</button></td>
+        </tr>`;
+      }).join('');
+      tbody.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => addItemToBill(b.dataset.add, 1)));
+    }
+
+    function renderTransactions() {
+      document.getElementById('transactionsTableBody').innerHTML = [...transactions].reverse().map(tx => `
+        <tr>
+          <td><span class="sku-code">${tx.id}</span></td>
+          <td>${tx.time}</td>
+          <td><span class="badge ${tx.type === 'OUT' ? 'badge-brand' : 'badge-success'}">${tx.type}</span></td>
+          <td><span class="sku-code">${tx.sku}</span></td>
+          <td>${tx.name}</td>
+          <td class="num">${tx.type === 'OUT' ? '-' : '+'}${tx.qty}</td>
+          <td class="num">฿${(tx.qty * tx.unitPrice).toLocaleString()}</td>
+          <td>${tx.actor}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderBillsAndDebtors() {
+      let total = 0, cash = 0, unpaid = 0;
+      bills.forEach(b => {
+        total += b.netTotal;
+        if (b.paymentStatus === 'PAID') cash += b.netTotal; else unpaid += b.netTotal;
+      });
+      document.getElementById('kpiTotalSales').textContent = `฿${total.toLocaleString()}`;
+      document.getElementById('kpiCashReceived').textContent = `฿${cash.toLocaleString()}`;
+      document.getElementById('kpiUnpaidTotal').textContent = `฿${unpaid.toLocaleString()}`;
+
+      const unpaidList = bills.filter(b => b.paymentStatus === 'UNPAID');
+      document.getElementById('unpaidCountBadge').textContent = `${unpaidList.length} ค้างชำระ`;
+
+      const debtorGrid = document.getElementById('debtorSummaryGrid');
+      debtorGrid.innerHTML = unpaidList.map(b => `
+        <div class="debtor-card">
+          <div><strong>${b.debtorName}</strong><div style="font-size:0.75rem;">${b.billNo} • ฿${b.netTotal.toLocaleString()}</div></div>
+          <button type="button" class="btn btn-primary btn-sm" data-settle="${b.billNo}">✓ รับชำระหนี้</button>
+        </div>
+      `).join('');
+      debtorGrid.querySelectorAll('[data-settle]').forEach(btn => btn.addEventListener('click', () => {
+        const found = bills.find(x => x.billNo === btn.dataset.settle);
+        if (found) {
+          found.paymentStatus = 'PAID';
+          found.paidDate = new Date().toLocaleDateString('th-TH');
+          if (isCloudConnected) callGoogleSheetsApi('SETTLE_DEBT', { billNos: [found.billNo], paidDate: found.paidDate }).catch(() => {});
+          renderBillsAndDebtors();
+          speakAndReply(`รับชำระหนี้บิล ${found.billNo} เรียบร้อยค่ะ`);
+        }
+      }));
+
+      document.getElementById('billsTableBody').innerHTML = [...bills].reverse().map(b => `
+        <tr>
+          <td><span class="sku-code">${b.billNo}</span></td>
+          <td>${b.dateStr} ${b.timeStr}</td>
+          <td>${b.quarterYear}</td>
+          <td class="num"><strong>฿${b.netTotal.toLocaleString()}</strong></td>
+          <td>${b.paymentStatus === 'UNPAID' ? '<span class="badge badge-warning">ค้างชำระ</span>' : '<span class="badge badge-success">จ่ายแล้ว</span>'}</td>
+          <td>${b.debtorName || 'ลูกค้าทั่วไป'}</td>
+          <td>${b.paidDate}</td>
+          <td class="num">-</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderBill() {
+      const container = document.getElementById('billItemsContainer');
+      const discount = Math.max(0, Number(document.getElementById('discountInput').value) || 0);
+      document.getElementById('billNumberBadge').textContent = `BILL-${String(billCounter).padStart(3, '0')}`;
+
+      if (currentBillItems.length === 0) {
+        container.innerHTML = `<div class="empty-state">ยังไม่มีรายการสินค้าในบิล</div>`;
+      } else {
+        container.innerHTML = currentBillItems.map(item => {
+          const p = products.find(x => x.sku === item.sku);
+          return `<div class="bill-item">
+            <div><p class="bill-item-title">${p.name}</p><span class="bill-item-sub">฿${p.price} / ${p.unit}</span></div>
+            <div class="qty-controls">
+              <button type="button" class="qty-btn" data-sku="${item.sku}" data-d="-1">-</button>
+              <span class="qty-val">${item.qty}</span>
+              <button type="button" class="qty-btn" data-sku="${item.sku}" data-d="1">+</button>
+            </div>
+            <div class="num" style="font-weight:700;">฿${(p.price * item.qty).toLocaleString()}</div>
+          </div>`;
+        }).join('');
+        container.querySelectorAll('.qty-btn').forEach(b => b.addEventListener('click', () => {
+          const item = currentBillItems.find(x => x.sku === b.dataset.sku);
+          if (!item) return;
+          item.qty += Number(b.dataset.d);
+          if (item.qty <= 0) currentBillItems = currentBillItems.filter(x => x.sku !== b.dataset.sku);
+          renderBill();
+        }));
+      }
+
+      const totalQty = currentBillItems.reduce((a, i) => a + i.qty, 0);
+      const subtotal = currentBillItems.reduce((a, i) => {
+        const p = products.find(x => x.sku === i.sku);
+        return a + (p ? p.price * i.qty : 0);
+      }, 0);
+      const net = Math.max(0, subtotal - discount);
+
+      document.getElementById('billTotalQty').textContent = `${totalQty} ชิ้น`;
+      document.getElementById('billSubtotal').textContent = `฿${subtotal.toLocaleString()}`;
+      document.getElementById('billDiscount').textContent = `-฿${discount.toLocaleString()}`;
+      document.getElementById('billNetTotal').textContent = `฿${net.toLocaleString()}`;
+      renderCustomerDisplay();
+    }
+
+    function addItemToBill(sku, qty) {
+      const existing = currentBillItems.find(x => x.sku === sku);
+      if (existing) existing.qty += qty; else currentBillItems.push({ sku, qty });
+      renderBill();
+    }
+
+    function processVoiceCommand(rawText) {
+      if (!rawText || !rawText.trim()) return;
+      const text = rawText.trim();
+
+      if (text.includes('ยืนยัน')) { confirmCurrentBill(); return; }
+      if (text.includes('พิมพ์บิล')) { window.print(); return; }
+
+      const creditMatch = text.match(/(?:บิลเชื่อ|ลงบัญชี|แปะโป้ง)\s*([ก-๙a-zA-Z0-9]+)/);
+      if (creditMatch && creditMatch[1]) setPaymentMode('CREDIT', creditMatch[1]);
+
+      const discMatch = text.match(/(?:ลดให้|ส่วนลด|ลด)\s*(\d+)/);
+      if (discMatch) document.getElementById('discountInput').value = parseInt(discMatch[1], 10);
+
+      products.forEach(p => {
+        for (const alias of p.aliases) {
+          const m = text.match(new RegExp(`${alias}\\s*(\\d+)?`, 'i'));
+          if (m) { addItemToBill(p.sku, m[1] ? parseInt(m[1], 10) : 1); break; }
+        }
+      });
+      renderBill();
+      speakAndReply('อัปเดตรายการในบิลเรียบร้อยค่ะ');
+    }
+
+    function buildInvoiceCopyHtml(bill, copyLabel) {
+      const rows = bill.items.map((i, idx) => `<tr><td>${idx + 1}. ${i.name}</td><td class="num">${i.qty} ${i.unit}</td><td class="num">฿${i.price}</td><td class="num">฿${i.lineTotal.toLocaleString()}</td></tr>`).join('');
+      return `<div class="invoice-sheet ${selectedPrintFormat === '80mm' ? 'format-80mm' : ''}">
+        <div class="invoice-header">
+          <div><strong>${bill.paymentStatus === 'UNPAID' ? 'บิลเงินเชื่อ (ค้างชำระ)' : 'ใบเสร็จรับเงิน'}</strong><div>เลขที่: ${bill.billNo} • วันที่: ${bill.dateStr} ${bill.timeStr}</div><div>ผู้ซื้อ: ${bill.debtorName || 'ลูกค้าทั่วไป'}</div></div>
+          <span class="invoice-copy-badge">${copyLabel}</span>
+        </div>
+        <table class="invoice-table"><thead><tr><th>รายการ</th><th class="num">จำนวน</th><th class="num">ราคา</th><th class="num">รวม</th></tr></thead><tbody>${rows}</tbody></table>
+        <div class="invoice-totals"><strong>ยอดสุทธิ: ฿${bill.netTotal.toLocaleString()}</strong></div>
+        <div class="invoice-signatures"><div class="sig-box"><div class="sig-line"></div>ผู้รับของ/ลูกค้า</div><div class="sig-box"><div class="sig-line"></div>ผู้รับเงิน/ร้านค้า</div></div>
+      </div>`;
+    }
+
+    function renderReceiptPreview() {
+      if (!lastBillData) return;
+      const el = document.getElementById('receiptContent');
+      el.innerHTML = selectedPrintFormat === 'a4-dup'
+        ? buildInvoiceCopyHtml(lastBillData, 'ต้นฉบับ (ลูกค้า)') + '<div class="cut-divider">✂️ เส้นประฉีกแบ่งครึ่ง A4</div>' + buildInvoiceCopyHtml(lastBillData, 'สำเนา (ร้านค้า)')
+        : buildInvoiceCopyHtml(lastBillData, 'ต้นฉบับใบเสร็จ');
+    }
+
+    function confirmCurrentBill() {
+      if (currentBillItems.length === 0) return;
+      const isCredit = currentPaymentMode === 'CREDIT';
+      const debtorName = document.getElementById('debtorNameInput').value.trim();
+      if (isCredit && !debtorName) { alert('กรุณาระบุชื่อผู้เชื่อสินค้า'); return; }
+
+      const discount = Math.max(0, Number(document.getElementById('discountInput').value) || 0);
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('th-TH');
+      const timeStr = now.toTimeString().slice(0, 5);
+      const billNo = `BILL-${String(billCounter++).padStart(3, '0')}`;
+
+      let subtotal = 0;
+      const newTxs = [];
+      const items = currentBillItems.map(item => {
+        const p = products.find(x => x.sku === item.sku);
+        const lineTotal = p.price * item.qty;
+        subtotal += lineTotal;
+        const tx = { id: `TX-${1000 + transactions.length + 1}`, time: timeStr, type: 'OUT', sku: p.sku, name: p.name, qty: item.qty, unitPrice: p.price, actor: billNo };
+        transactions.push(tx);
+        newTxs.push(tx);
+        return { sku: p.sku, name: p.name, unit: p.unit, qty: item.qty, price: p.price, lineTotal };
+      });
+
+      const netTotal = Math.max(0, subtotal - discount);
+      const billRecord = { billNo, dateStr, timeStr, subtotal, discount, netTotal, paymentStatus: isCredit ? 'UNPAID' : 'PAID', debtorName: isCredit ? debtorName : '', paidDate: isCredit ? '-' : dateStr, quarterYear: 'Q4-2026', items };
+      bills.push(billRecord);
+      lastBillData = billRecord;
+
+      if (isCloudConnected) {
+        callGoogleSheetsApi('SAVE_BILL', { bill: billRecord, transactions: newTxs }).catch(() => {});
+      }
+
+      currentBillItems = [];
+      setPaymentMode('CASH');
+      renderProducts();
+      renderBillsAndDebtors();
+      renderTransactions();
+      renderBill();
+      renderReceiptPreview();
+      document.getElementById('receiptModal').classList.add('open');
+      speakAndReply(`ออกบิล ${billNo} ยอดสุทธิ ${netTotal.toLocaleString()} บาท เรียบร้อยค่ะ`);
+    }
+
+    // Bindings
+    document.getElementById('switchCashierViewBtn').addEventListener('click', () => setViewMode('CASHIER'));
+    document.getElementById('switchCustomerViewBtn').addEventListener('click', () => setViewMode('CUSTOMER'));
+    document.getElementById('cfdBackToCashierBtn').addEventListener('click', () => setViewMode('CASHIER'));
+    document.getElementById('cfdConfirmBtn').addEventListener('click', confirmCurrentBill);
+    document.getElementById('modeCashBtn').addEventListener('click', () => setPaymentMode('CASH'));
+    document.getElementById('modeCreditBtn').addEventListener('click', () => setPaymentMode('CREDIT'));
+    document.getElementById('confirmBillBtn').addEventListener('click', confirmCurrentBill);
+    document.getElementById('clearBillBtn').addEventListener('click', () => { currentBillItems = []; renderBill(); });
+    document.getElementById('discountInput').addEventListener('input', renderBill);
+    document.getElementById('promptPayIdInput').addEventListener('input', renderCustomerDisplay);
+
+    document.querySelectorAll('.debtor-chip').forEach(c => c.addEventListener('click', () => setPaymentMode('CREDIT', c.dataset.debtor)));
+    document.querySelectorAll('.chip-btn').forEach(c => c.addEventListener('click', () => processVoiceCommand(c.dataset.phrase)));
+    document.getElementById('voiceCommandForm').addEventListener('submit', e => {
+      e.preventDefault();
+      processVoiceCommand(document.getElementById('commandInput').value);
+      document.getElementById('commandInput').value = '';
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const t = btn.dataset.tab;
+      document.getElementById('panelProducts').hidden = t !== 'products';
+      document.getElementById('panelBills').hidden = t !== 'bills';
+      document.getElementById('panelTransactions').hidden = t !== 'transactions';
+    }));
+
+    document.querySelectorAll('[data-print-format]').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-print-format]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedPrintFormat = btn.dataset.printFormat;
+      renderReceiptPreview();
+    }));
+
+    document.getElementById('printReceiptBtn').addEventListener('click', () => window.print());
+    document.getElementById('closeReceiptBtn').addEventListener('click', () => document.getElementById('receiptModal').classList.remove('open'));
+
+    // Login & Cloud Sync Logic
+    document.getElementById('openLoginSettingsBtn').addEventListener('click', () => {
+      document.getElementById('loginOverlay').hidden = false;
+    });
+    document.getElementById('useDemoModeBtn').addEventListener('click', () => {
+      document.getElementById('loginOverlay').hidden = true;
+    });
+    document.getElementById('syncNowHeaderBtn').addEventListener('click', syncFromGoogleSheets);
+
+    document.getElementById('loginSyncForm').addEventListener('submit', e => {
+      e.preventDefault();
+      activeScriptUrl = document.getElementById('gasWebAppUrlInput').value.trim();
+      activeSecretPin = document.getElementById('secretPinInput').value.trim();
+      const mode = document.querySelector('input[name="persistMode"]:checked').value;
+      try {
+        localStorage.setItem('POS_GAS_URL', activeScriptUrl);
+        if (mode === 'REMEMBER') {
+          localStorage.setItem('POS_SECRET_PIN', activeSecretPin);
+        } else {
+          localStorage.removeItem('POS_SECRET_PIN');
+          sessionStorage.setItem('POS_SECRET_PIN', activeSecretPin);
+        }
+      } catch (err) {}
+      syncFromGoogleSheets();
+    });
+
+    document.getElementById('clearSavedCredentialsBtn').addEventListener('click', () => {
+      try { localStorage.removeItem('POS_GAS_URL'); localStorage.removeItem('POS_SECRET_PIN'); sessionStorage.removeItem('POS_SECRET_PIN'); } catch (e) {}
+      document.getElementById('gasWebAppUrlInput').value = '';
+      document.getElementById('secretPinInput').value = '';
+      isCloudConnected = false;
+      alert('ล้างค่ารหัสผ่านที่จำไว้ในเครื่องเรียบร้อยแล้ว');
+    });
+
+    // Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const rec = new SpeechRecognition();
+      rec.lang = 'th-TH';
+      document.getElementById('micToggleBtn').addEventListener('click', () => {
+        try { rec.start(); document.getElementById('micToggleBtn').classList.add('listening'); } catch (e) {}
+      });
+      rec.onresult = ev => {
+        const txt = ev.results[0][0].transcript;
+        document.getElementById('commandInput').value = txt;
+        processVoiceCommand(txt);
+      };
+      rec.onend = () => document.getElementById('micToggleBtn').classList.remove('listening');
+    }
+
+    // Auto-restore saved credentials
+    try {
+      const savedUrl = localStorage.getItem('POS_GAS_URL') || '';
+      const savedPin = localStorage.getItem('POS_SECRET_PIN') || sessionStorage.getItem('POS_SECRET_PIN') || '';
+      if (savedUrl) document.getElementById('gasWebAppUrlInput').value = savedUrl;
+      if (savedUrl && savedPin) {
+        activeScriptUrl = savedUrl;
+        activeSecretPin = savedPin;
+        syncFromGoogleSheets();
+      }
+    } catch (e) {}
+
+    renderProducts();
+    renderBillsAndDebtors();
+    renderTransactions();
+    renderBill();
+  </script>
+</body>
+</html>
+```
