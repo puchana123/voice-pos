@@ -617,9 +617,11 @@
           <form id="addProductForm" class="add-product-form">
             <div><label class="field-label">SKU</label><input type="text" id="newSku" class="input" placeholder="P-005" required></div>
             <div><label class="field-label">ชื่อสินค้า</label><input type="text" id="newName" class="input" placeholder="ชื่อสินค้าในร้าน" required></div>
-            <div><label class="field-label">คำเรียก/คำพ้องเสียง (คั่นด้วย ,)</label><input type="text" id="newAlias" class="input" placeholder="คำเรียกสั้น, คำพ้องเสียง"></div>
-            <div><label class="field-label">หน่วยนับ</label><input type="text" id="newUnit" class="input" placeholder="ชิ้น, ถุง, กล่อง" value="ชิ้น"></div>
-            <div><label class="field-label">ราคาขาย</label><input type="number" id="newPrice" class="input" min="1" required></div>
+            <div><label class="field-label">คำเรียก/คำพ้องเสียง</label><input type="text" id="newAlias" class="input" placeholder="คั่นด้วย ,"></div>
+            <div><label class="field-label">หมวดหมู่ (Category)</label><input type="text" id="newCategory" class="input" placeholder="เช่น เครื่องดื่ม, อุปกรณ์" value="ทั่วไป"></div>
+            <div><label class="field-label">หน่วยนับ (Unit)</label><input type="text" id="newUnit" class="input" placeholder="ชิ้น, ถุง, กล่อง" value="ชิ้น"></div>
+            <div><label class="field-label">ต้นทุน (Cost)</label><input type="number" id="newCost" class="input" min="0" step="any" placeholder="0" value="0"></div>
+            <div><label class="field-label">ราคาขาย (Price)</label><input type="number" id="newPrice" class="input" min="1" step="any" required></div>
             <div><label class="field-label">สต็อกตั้งต้น</label><input type="number" id="newStock" class="input" min="0" required></div>
             <div><button type="submit" class="btn btn-secondary" style="width:100%;">+ เพิ่มสินค้า</button></div>
           </form>
@@ -1255,17 +1257,18 @@
             const rawAliases = String(r[2] || name).split(',').map(s => s.trim()).filter(Boolean);
             if (!rawAliases.includes(name)) rawAliases.unshift(name);
             products.push({
-              sku: String(r[0]).trim(),
-              name,
-              aliases: rawAliases,
-              category: 'คลังสินค้า',
-              unit: String(r[3] || 'ชิ้น'),
-              cost: Number(r[4]) || 0,
-              price: Number(r[5]) || 0,
-              minStock: Number(r[7]) || 3
+              sku: String(r[0]).trim(),              // Col A (0): SKU
+              name,                                  // Col B (1): Name
+              aliases: rawAliases,                   // Col C (2): Voice_Alias
+              category: String(r[3] || 'ทั่วไป'),     // Col D (3): Category
+              unit: String(r[4] || 'ชิ้น'),           // Col E (4): Unit
+              cost: Number(r[5]) || 0,               // Col F (5): Cost
+              price: Number(r[6]) || 0,              // Col G (6): Price
+              minStock: r[8] !== undefined && r[8] !== '' ? Number(r[8]) : 0 // Col I (8): Min_Stock (ค่าเริ่มต้น 0)
             });
           });
         }
+
         if (Array.isArray(data.transactions) && data.transactions.length > 0) {
           transactions.length = 0;
           data.transactions.forEach((r, idx) => {
@@ -1595,29 +1598,52 @@
       document.getElementById('commandInput').value = '';
     });
 
-    document.getElementById('addProductForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const sku = document.getElementById('newSku').value.trim().toUpperCase();
-      const name = document.getElementById('newName').value.trim();
-      const aliasStr = document.getElementById('newAlias').value.trim();
-      const unit = document.getElementById('newUnit').value.trim() || 'ชิ้น';
-      const price = Number(document.getElementById('newPrice').value) || 0;
-      const stock = Number(document.getElementById('newStock').value) || 0;
-      const aliases = aliasStr ? aliasStr.split(',').map(s => s.trim()).filter(Boolean) : [name];
-      if (!aliases.includes(name)) aliases.unshift(name);
-
-      const newProd = { sku, name, aliases, category: 'คลังสินค้า', unit, cost: Math.round(price * 0.65), price, minStock: 3 };
-      products.push(newProd);
-      const initTx = stock > 0 ? { id: `TX-${1000 + transactions.length + 1}`, time: new Date().toTimeString().slice(0, 5), type: 'IN', sku, name, qty: stock, unitPrice: newProd.cost, actor: 'เพิ่มสินค้าใหม่' } : null;
-      if (initTx) transactions.push(initTx);
-      if (isCloudConnected) callGoogleSheetsApi('ADD_PRODUCT', { product: newProd, transactions: initTx ? [initTx] : [] }).catch(() => {});
-
-      e.target.reset();
-      renderProducts();
-      renderTransactions();
-      renderDynamicStoreHelpers();
-      speakAndReply(`เพิ่มสินค้า ${name} เรียบร้อยค่ะ`);
+      document.getElementById('addProductForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const sku = document.getElementById('newSku').value.trim().toUpperCase();
+        const name = document.getElementById('newName').value.trim();
+        const aliasStr = document.getElementById('newAlias').value.trim();
+        const category = document.getElementById('newCategory').value.trim() || 'ทั่วไป';
+        const unit = document.getElementById('newUnit').value.trim() || 'ชิ้น';
+        const cost = Number(document.getElementById('newCost').value) || 0;
+        const price = Number(document.getElementById('newPrice').value) || 0;
+        const stock = Number(document.getElementById('newStock').value) || 0;
+        const aliases = aliasStr ? aliasStr.split(',').map(s => s.trim()).filter(Boolean) : [name];
+        if (!aliases.includes(name)) aliases.unshift(name);
+  
+        // ตั้งค่าเริ่มต้น minStock เป็น 0 และใช้ cost ตามที่กรอกจริง
+        const newProd = { sku, name, aliases, category, unit, cost, price, minStock: 0 };
+        products.push(newProd);
+  
+        const initTx = stock > 0 ? {
+          id: `TX-${1000 + transactions.length + 1}`,
+          time: new Date().toTimeString().slice(0, 5),
+          type: 'IN',
+          sku,
+          name,
+          qty: stock,
+          unitPrice: cost,
+          actor: 'เพิ่มสินค้าใหม่'
+        } : null;
+  
+        if (initTx) transactions.push(initTx);
+        if (isCloudConnected) {
+          callGoogleSheetsApi('ADD_PRODUCT', {
+            product: newProd,
+            transactions: initTx ? [initTx] : []
+          }).catch(() => {});
+        }
+  
+        e.target.reset();
+        document.getElementById('newCategory').value = 'ทั่วไป';
+        document.getElementById('newUnit').value = 'ชิ้น';
+        document.getElementById('newCost').value = '0';
+        renderProducts();
+        renderTransactions();
+        renderDynamicStoreHelpers();
+        speakAndReply(`เพิ่มสินค้า ${name} จำนวน ${stock} ${unit} เรียบร้อยค่ะ`);
     });
+
 
     document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
