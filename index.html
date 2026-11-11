@@ -1249,7 +1249,7 @@
           document.getElementById('storeHeaderTitle').textContent = `AI Voice POS — ${data.storeName}`;
         }
 
-        if (Array.isArray(data.products) && data.products.length > 0) {
+        if (Array.isArray(data.products)) {
           products.length = 0;
           data.products.forEach(r => {
             if (!r[0]) return;
@@ -1257,19 +1257,19 @@
             const rawAliases = String(r[2] || name).split(',').map(s => s.trim()).filter(Boolean);
             if (!rawAliases.includes(name)) rawAliases.unshift(name);
             products.push({
-              sku: String(r[0]).trim(),              // Col A (0): SKU
-              name,                                  // Col B (1): Name
-              aliases: rawAliases,                   // Col C (2): Voice_Alias
-              category: String(r[3] || 'ทั่วไป'),     // Col D (3): Category
-              unit: String(r[4] || 'ชิ้น'),           // Col E (4): Unit
-              cost: Number(r[5]) || 0,               // Col F (5): Cost
-              price: Number(r[6]) || 0,              // Col G (6): Price
-              minStock: r[8] !== undefined && r[8] !== '' ? Number(r[8]) : 0 // Col I (8): Min_Stock (ค่าเริ่มต้น 0)
+              sku: String(r[0]).trim(),
+              name,
+              aliases: rawAliases,
+              category: String(r[3] || 'ทั่วไป'),
+              unit: String(r[4] || 'ชิ้น'),
+              cost: Number(r[5]) || 0,
+              price: Number(r[6]) || 0,
+              minStock: r[8] !== undefined && r[8] !== '' ? Number(r[8]) : 0
             });
           });
         }
 
-        if (Array.isArray(data.transactions) && data.transactions.length > 0) {
+        if (Array.isArray(data.transactions)) {
           transactions.length = 0;
           data.transactions.forEach((r, idx) => {
             if (!r[3]) return;
@@ -1285,6 +1285,7 @@
             });
           });
         }
+
         if (Array.isArray(data.bills)) {
           bills.length = 0;
           data.bills.forEach(r => {
@@ -1610,11 +1611,23 @@
         const stock = Number(document.getElementById('newStock').value) || 0;
         const aliases = aliasStr ? aliasStr.split(',').map(s => s.trim()).filter(Boolean) : [name];
         if (!aliases.includes(name)) aliases.unshift(name);
-  
-        // ตั้งค่าเริ่มต้น minStock เป็น 0 และใช้ cost ตามที่กรอกจริง
+
+        // เช็คว่ามีรหัส SKU นี้อยู่ในตาราง Products แล้วหรือยัง
+        if (products.some(p => p.sku === sku)) {
+          alert(`รหัสสินค้า ${sku} มีอยู่ในตารางแล้วค่ะ`);
+          return;
+        }
+
+        // ล้างรายการเคลื่อนไหวเก่าที่อาจตกค้างใน Transactions ของ SKU นี้ (กรณีเคยลบออกจากหน้า Products แล้วเพิ่มใหม่)
+        for (let i = transactions.length - 1; i >= 0; i--) {
+          if (transactions[i].sku === sku) {
+            transactions.splice(i, 1);
+          }
+        }
+
         const newProd = { sku, name, aliases, category, unit, cost, price, minStock: 0 };
         products.push(newProd);
-  
+
         const initTx = stock > 0 ? {
           id: `TX-${1000 + transactions.length + 1}`,
           time: new Date().toTimeString().slice(0, 5),
@@ -1625,14 +1638,26 @@
           unitPrice: cost,
           actor: 'เพิ่มสินค้าใหม่'
         } : null;
-  
+
         if (initTx) transactions.push(initTx);
         if (isCloudConnected) {
           callGoogleSheetsApi('ADD_PRODUCT', {
             product: newProd,
-            transactions: initTx ? [initTx] : []
+            transactions: initTx ? [initTx] : [],
+            resetOldInitialStock: true
           }).catch(() => {});
         }
+
+        e.target.reset();
+        document.getElementById('newCategory').value = 'ทั่วไป';
+        document.getElementById('newUnit').value = 'ชิ้น';
+        document.getElementById('newCost').value = '0';
+        renderProducts();
+        renderTransactions();
+        renderDynamicStoreHelpers();
+        speakAndReply(`เพิ่มสินค้า ${name} จำนวน ${stock} ${unit} เรียบร้อยค่ะ`);
+      });
+
   
         e.target.reset();
         document.getElementById('newCategory').value = 'ทั่วไป';
