@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Live Speak POS & Inventory — ระบบออกบิลด้วยเสียงและจัดการสต็อก</title>
+  <title>AI Live Speak POS & Inventory — ระบบออกบิลด้วยเสียงสำหรับร้านค้าทั่วไป</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,6 +21,7 @@
       --brand-soft: #f0fdfa;
       --brand-border: #99f6e4;
       --brand-ink: #ffffff;
+      --accent: #2563eb;
       --danger: #dc2626;
       --danger-soft: #fef2f2;
       --warning: #d97706;
@@ -30,12 +31,15 @@
       --radius-sm: 8px;
       --radius: 12px;
       --radius-lg: 16px;
-      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --space-1: 4px;
       --space-2: 8px;
       --space-3: 12px;
       --space-4: 16px;
       --space-6: 24px;
-      --font: 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+      --space-8: 32px;
+      --font: 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     * { box-sizing: border-box; }
@@ -47,6 +51,7 @@
       color: var(--ink);
       background: var(--bg);
       line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
     .app-header {
@@ -70,9 +75,15 @@
 
     .brand-group { display: flex; align-items: center; gap: var(--space-3); }
     .brand-icon {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: var(--brand); color: var(--brand-ink);
-      display: flex; align-items: center; justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--brand);
+      color: var(--brand-ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
     .brand-title { margin: 0; font-size: 1.15rem; font-weight: 700; }
     .brand-subtitle { margin: 0; font-size: 0.78rem; color: var(--muted); }
@@ -88,22 +99,43 @@
     }
 
     .view-switch-btn {
-      font: inherit; font-size: 0.8125rem; font-weight: 600;
-      padding: 6px 14px; border-radius: 999px; border: none;
-      background: transparent; color: var(--muted); cursor: pointer;
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
     }
-    .view-switch-btn.active { background: var(--brand); color: var(--brand-ink); }
+
+    .view-switch-btn.active {
+      background: var(--brand);
+      color: var(--brand-ink);
+      box-shadow: var(--shadow);
+    }
 
     .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 0.75rem; font-weight: 600;
-      padding: 4px 10px; border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
       border: 1px solid transparent;
     }
+
     .badge-brand { background: var(--brand-soft); color: var(--brand); border-color: var(--brand-border); }
     .badge-neutral { background: var(--surface-subtle); color: var(--muted); border-color: var(--border); }
     .badge-success { background: var(--success-soft); color: var(--success); border-color: #bbf7d0; }
     .badge-warning { background: var(--warning-soft); color: var(--warning); border-color: #fde68a; }
+    .badge-danger { background: var(--danger-soft); color: var(--danger); border-color: #fecaca; }
 
     .container { max-width: 1280px; margin: 0 auto; padding: var(--space-6); }
     .workspace-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-6); align-items: start; }
@@ -118,10 +150,15 @@
     }
 
     .section-header {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
     }
-    .section-title { margin: 0; font-size: 1.05rem; font-weight: 700; }
+
+    .section-title { margin: 0; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: var(--space-2); }
 
     /* Voice Console */
     .voice-console {
@@ -131,17 +168,30 @@
       padding: var(--space-6);
       margin-bottom: var(--space-6);
     }
+
     .voice-top { display: flex; flex-direction: column; gap: var(--space-4); }
     @media (min-width: 640px) { .voice-top { flex-direction: row; align-items: center; } }
 
     .mic-btn {
-      width: 76px; height: 76px; border-radius: 50%; border: none;
-      background: var(--brand); color: var(--brand-ink); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.75rem; flex-shrink: 0;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      border: none;
+      background: var(--brand);
+      color: var(--brand-ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.75rem;
       box-shadow: 0 4px 14px rgba(15, 118, 110, 0.3);
+      transition: transform 0.15s ease, background 0.15s ease;
     }
+
+    .mic-btn:hover { background: var(--brand-hover); transform: translateY(-1px); }
     .mic-btn.listening { background: var(--danger); animation: pulse 1.2s infinite; }
+
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.35); }
       70% { box-shadow: 0 0 0 16px rgba(220, 38, 38, 0); }
@@ -150,137 +200,280 @@
 
     .voice-status-box { flex: 1; min-width: 0; }
     .voice-state-label {
-      font-size: 0.85rem; font-weight: 600; color: var(--brand);
-      margin-bottom: 4px; display: flex; justify-content: space-between;
-      flex-wrap: wrap; gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--brand);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .voice-state-label.listening { color: var(--danger); }
 
     .live-transcript-preview {
-      font-size: 0.85rem; padding: 6px 12px; border-radius: 6px;
-      background: #fffbeb; border: 1px dashed #f59e0b; color: #92400e; margin-top: 6px;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: #fffbeb;
+      border: 1px dashed #f59e0b;
+      color: #92400e;
+      margin-top: 6px;
     }
 
     .voice-command-input-row { display: flex; gap: var(--space-2); margin-top: var(--space-2); flex-wrap: wrap; }
     .voice-command-input-row .input { flex: 1; min-width: 220px; }
 
     .input {
-      width: 100%; font: inherit; font-size: 0.9375rem;
-      padding: 10px 14px; border-radius: var(--radius-sm);
-      border: 1px solid var(--border-strong); background: var(--surface);
+      width: 100%;
+      font: inherit;
+      font-size: 0.9375rem;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
     }
 
     .btn {
-      font: inherit; font-size: 0.875rem; font-weight: 600;
-      padding: 10px 16px; border-radius: var(--radius-sm);
-      border: 1px solid transparent; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
     }
+
     .btn-primary { background: var(--brand); color: var(--brand-ink); }
+    .btn-primary:hover { background: var(--brand-hover); }
     .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--border-strong); }
+    .btn-secondary:hover { background: var(--surface-subtle); }
     .btn-danger-outline { background: var(--surface); color: var(--danger); border-color: #fecaca; }
+    .btn-danger-outline:hover { background: var(--danger-soft); }
     .btn-sm { padding: 6px 10px; font-size: 0.8125rem; }
 
     .quick-phrases { margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px dashed var(--brand-border); }
-    .chip-list { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: 6px; }
+    .quick-phrases-label { font-size: 0.75rem; color: var(--muted); margin-bottom: var(--space-2); display: block; }
+    .chip-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
     .chip-btn {
-      font: inherit; font-size: 0.8125rem; padding: 6px 12px;
-      border-radius: 999px; border: 1px solid var(--brand-border);
-      background: var(--surface); cursor: pointer;
+      font: inherit;
+      font-size: 0.8125rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--brand-border);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
     }
+    .chip-btn:hover { background: var(--brand-soft); border-color: var(--brand); }
 
     .ai-response-bar {
-      margin-top: var(--space-4); padding: var(--space-3) var(--space-4);
-      border-radius: var(--radius-sm); background: var(--surface);
-      border-left: 4px solid var(--brand); font-size: 0.875rem;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      margin-top: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border-left: 4px solid var(--brand);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+      flex-wrap: wrap;
     }
 
+    /* Tabs & Tables */
     .tabs { display: flex; gap: var(--space-2); border-bottom: 1px solid var(--border); margin-bottom: var(--space-4); flex-wrap: wrap; }
     .tab-btn {
-      font: inherit; font-size: 0.9375rem; font-weight: 600;
-      padding: 10px 14px; border: none; background: transparent;
-      color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer;
+      font: inherit;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
     .tab-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
 
     .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
-    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    th { background: var(--surface-subtle); color: var(--muted); text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
-    td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; background: var(--surface); }
+    th { background: var(--surface-subtle); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     .num { text-align: right; font-variant-numeric: tabular-nums; }
-    .sku-code { font-family: monospace; font-size: 0.75rem; background: var(--surface-subtle); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); }
+    .sku-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.75rem; background: var(--surface-subtle); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted); }
 
     .add-product-form {
-      margin-top: var(--space-4); padding: var(--space-4);
-      background: var(--surface-subtle); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: var(--space-3); align-items: end;
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: var(--space-3);
+      align-items: end;
     }
+
     .field-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
 
+    /* Live Bill & Payment Modes */
     .bill-card { position: sticky; top: 88px; }
     .payment-mode-switch {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
-      background: var(--surface-subtle); padding: 4px;
-      border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: var(--space-3);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--surface-subtle);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      margin-bottom: var(--space-3);
     }
-    .mode-btn { font: inherit; font-size: 0.8125rem; font-weight: 600; padding: 8px; border-radius: 6px; border: 1px solid transparent; background: transparent; cursor: pointer; }
-    .mode-btn.active-cash { background: var(--surface); color: var(--brand); border-color: var(--brand-border); }
-    .mode-btn.active-credit { background: var(--warning-soft); color: var(--warning); border-color: #fde68a; }
+
+    .mode-btn {
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .mode-btn.active-cash { background: var(--surface); color: var(--brand); border-color: var(--brand-border); box-shadow: var(--shadow); }
+    .mode-btn.active-credit { background: var(--warning-soft); color: var(--warning); border-color: #fde68a; box-shadow: var(--shadow); }
 
     .debtor-box { background: var(--warning-soft); border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: var(--space-3); margin-bottom: var(--space-3); }
     .debtor-quick-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .debtor-chip { font: inherit; font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid #fcd34d; background: #fff; color: #92400e; cursor: pointer; }
+    .debtor-chip { font: inherit; font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid #fcd34d; background: #ffffff; color: #92400e; cursor: pointer; }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4); }
-    .kpi-card { background: var(--surface-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3); }
-    .kpi-val { font-size: 1.25rem; font-weight: 700; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4); }
+    .kpi-card { background: var(--surface-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); }
+    .kpi-card.kpi-credit { background: var(--warning-soft); border-color: #fde68a; }
+    .kpi-card.kpi-cash { background: var(--success-soft); border-color: #bbf7d0; }
+    .kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+    .kpi-val { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
     .debtor-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4); }
-    .debtor-card { background: var(--surface); border: 1px solid #fde68a; border-left: 4px solid var(--warning); border-radius: var(--radius-sm); padding: var(--space-3); display: flex; justify-content: space-between; align-items: center; }
+    .debtor-card { background: var(--surface); border: 1px solid #fde68a; border-left: 4px solid var(--warning); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
 
     .bill-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4); }
-    .bill-items-list { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: var(--space-4); max-height: 320px; overflow-y: auto; }
+    .bill-items-list { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: var(--space-4); max-height: 340px; overflow-y: auto; }
     .bill-item { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3); border-bottom: 1px solid var(--border); }
-    .bill-item-title { font-weight: 600; margin: 0; }
+    .bill-item:last-child { border-bottom: none; }
+    .bill-item-title { font-weight: 600; font-size: 0.9375rem; margin: 0; }
     .bill-item-sub { font-size: 0.75rem; color: var(--muted); }
+
     .qty-controls { display: inline-flex; align-items: center; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; }
     .qty-btn { border: none; background: var(--surface-subtle); width: 28px; height: 28px; cursor: pointer; font-weight: 700; }
     .qty-val { padding: 0 10px; font-size: 0.875rem; font-weight: 600; }
-    .empty-state { text-align: center; padding: 32px 16px; color: var(--muted); font-size: 0.875rem; }
+    .empty-state { text-align: center; padding: var(--space-8) var(--space-4); color: var(--muted); font-size: 0.875rem; }
 
     .bill-summary { background: var(--surface-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-4); margin-bottom: var(--space-4); }
-    .summary-row { display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 6px; color: var(--muted); }
-    .summary-row.total { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-strong); font-size: 1.125rem; font-weight: 700; color: var(--ink); margin-bottom: 0; }
+    .summary-row { display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: var(--space-2); color: var(--muted); }
+    .summary-row.total { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-strong); font-size: 1.125rem; font-weight: 700; color: var(--ink); margin-bottom: 0; }
     .bill-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
     .bill-actions .btn-primary { grid-column: span 2; padding: 12px; font-size: 1rem; }
 
-    /* Customer Display (No QR) */
-    .cfd-banner { background: #0f172a; color: #fff; border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); }
-    .cfd-top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #334155; margin-bottom: 20px; }
-    .cfd-items-panel { background: #1e293b; border: 1px solid #334155; border-radius: var(--radius); padding: var(--space-6); min-height: 360px; display: flex; flex-direction: column; justify-content: space-between; }
-    .cfd-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #334155; font-size: 1.15rem; }
-    .cfd-item-qty { background: #0f766e; color: #fff; padding: 4px 12px; border-radius: 999px; font-weight: 700; }
-    .cfd-item-price { font-weight: 700; color: #5eead4; }
-    .cfd-giant-total-box { margin-top: 20px; padding-top: 16px; border-top: 2px solid #475569; }
-    .cfd-sub-row { display: flex; justify-content: space-between; color: #cbd5e1; margin-bottom: 6px; }
-    .cfd-net-row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
-    .cfd-net-amount { font-size: 2.75rem; font-weight: 700; color: #2dd4bf; }
+    /* Customer-Facing Display (CFD) */
+    .cfd-banner { background: #0f172a; color: #ffffff; border-radius: var(--radius-lg); padding: var(--space-6); border: 1px solid #334155; margin-bottom: var(--space-6); }
+    .cfd-top-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px solid #334155; margin-bottom: var(--space-6); }
+    .cfd-store-title { font-size: 1.4rem; font-weight: 700; margin: 0; }
+    .cfd-items-panel { background: #1e293b; border: 1px solid #334155; border-radius: var(--radius); padding: var(--space-6); display: flex; flex-direction: column; justify-content: space-between; min-height: 400px; }
+    .cfd-item-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: 14px 0; border-bottom: 1px solid #334155; font-size: 1.2rem; }
+    .cfd-item-name { font-weight: 600; color: #f8fafc; }
+    .cfd-item-qty { background: #0f766e; color: #ffffff; padding: 4px 14px; border-radius: 999px; font-size: 1rem; font-weight: 700; }
+    .cfd-item-price { font-weight: 700; font-size: 1.35rem; color: #5eead4; min-width: 110px; text-align: right; }
+    .cfd-giant-total-box { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 2px solid #475569; }
+    .cfd-sub-row { display: flex; justify-content: space-between; font-size: 1.05rem; color: #cbd5e1; margin-bottom: 6px; }
+    .cfd-net-row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px; }
+    .cfd-net-label { font-size: 1.35rem; font-weight: 700; color: #f8fafc; }
+    .cfd-net-amount { font-size: 3rem; font-weight: 700; color: #2dd4bf; }
 
-    /* Login & Receipt Modals */
-    .login-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.74); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 60; }
-    .login-card { background: var(--surface); border-radius: var(--radius-lg); max-width: 520px; width: 100%; padding: var(--space-6); max-height: 92vh; overflow-y: auto; }
-    .radio-card { display: flex; gap: 10px; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-subtle); cursor: pointer; font-size: 0.8125rem; margin-bottom: 8px; }
-    .sync-status-msg { font-size: 0.8125rem; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 12px; background: var(--danger-soft); color: var(--danger); border: 1px solid #fecaca; }
+    /* Login & Cloud Sync Modal */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.74);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      z-index: 60;
+    }
 
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 35px rgba(15, 23, 42, 0.25);
+      max-width: 560px;
+      width: 100%;
+      padding: var(--space-6);
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .login-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .radio-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+      cursor: pointer;
+      font-size: 0.8125rem;
+      margin-bottom: 8px;
+    }
+
+    .sync-status-msg {
+      font-size: 0.8125rem;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-3);
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+    }
+    .sync-status-msg.error { background: var(--danger-soft); color: var(--danger); border-color: #fecaca; }
+    .sync-status-msg.success { background: var(--success-soft); color: var(--success); border-color: #bbf7d0; }
+
+    /* Receipt Modal & Print */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); display: none; align-items: center; justify-content: center; padding: var(--space-4); z-index: 50; }
     .modal-backdrop.open { display: flex; }
     .receipt-modal { background: var(--surface); border-radius: var(--radius); max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; padding: var(--space-6); }
-    .receipt-paper { background: #fafafa; border: 1px dashed var(--border-strong); border-radius: var(--radius-sm); padding: 16px; margin: 16px 0; }
+    .receipt-paper { background: #fafafa; border: 1px dashed var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-4); margin: var(--space-4) 0; }
     .format-btn { font: inherit; font-size: 0.8125rem; font-weight: 600; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; }
     .format-btn.active { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
-    .invoice-sheet { background: #fff; color: #0f172a; border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; font-size: 0.8125rem; }
+    .invoice-sheet { background: #ffffff; color: #0f172a; border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; font-size: 0.8125rem; }
     .invoice-sheet.format-80mm { max-width: 310px; margin: 0 auto; }
     .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 10px; }
     .invoice-copy-badge { font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border: 1px solid #0f172a; border-radius: 4px; height: fit-content; }
@@ -294,7 +487,7 @@
 
     @media print {
       @page { margin: 8mm; }
-      body { background: #fff !important; }
+      body { background: #ffffff !important; }
       .app-header, main.container, .login-overlay, .no-print { display: none !important; }
       .modal-backdrop { position: static !important; display: block !important; background: transparent !important; padding: 0 !important; }
       .receipt-modal { max-width: 100% !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
@@ -307,38 +500,40 @@
   <header class="app-header">
     <div class="header-inner">
       <div class="brand-group">
-        <div class="brand-icon">🎙️</div>
+        <div class="brand-icon" aria-hidden="true">🎙️</div>
         <div>
-          <h1 class="brand-title">AI Live Speak POS &amp; Inventory</h1>
-          <p class="brand-subtitle">ออกบิลด้วยเสียงแม่นยำสูง (Global Longest-Match + Gemini Backend Proxy)</p>
+          <h1 class="brand-title" id="storeHeaderTitle">AI Live Speak POS &amp; Inventory</h1>
+          <p class="brand-subtitle">ระบบออกบิลด้วยเสียงสำหรับร้านค้าทั่วไป (ดึงข้อมูลสินค้าและลูกหนี้จาก Google Sheets อัตโนมัติ)</p>
         </div>
       </div>
 
       <div class="header-meta">
-        <div class="view-switcher-group">
+        <div class="view-switcher-group" role="group" aria-label="สลับมุมมองหน้าจอ">
           <button type="button" id="switchCashierViewBtn" class="view-switch-btn active">🧑‍💼 จอแคชเชียร์</button>
-          <button type="button" id="switchCustomerViewBtn" class="view-switch-btn">🖥️ หน้าจอลูกค้า</button>
+          <button type="button" id="switchCustomerViewBtn" class="view-switch-btn">🖥️ หน้าจอลูกค้า (แสดงยอดบิล)</button>
         </div>
+        <span class="badge badge-brand" id="aiEngineBadge">🧠 โหมด Universal POS Parser</span>
         <span class="badge badge-neutral" id="cloudSyncBadge">โหมดข้อมูลตัวอย่าง</span>
-        <button type="button" id="syncNowHeaderBtn" class="btn btn-secondary btn-sm" hidden>🔄 ซิงค์ข้อมูล</button>
-        <button type="button" id="openLoginSettingsBtn" class="btn btn-secondary btn-sm">🔐 ตั้งค่า / ล็อกจอ</button>
+        <button type="button" id="syncNowHeaderBtn" class="btn btn-secondary btn-sm" hidden>🔄 ซิงค์ข้อมูลร้าน</button>
+        <button type="button" id="openLoginSettingsBtn" class="btn btn-secondary btn-sm">🔐 ตั้งค่าร้านค้า / Sheets</button>
       </div>
     </div>
   </header>
 
   <main class="container">
+    <!-- Voice Command Console -->
     <section class="voice-console">
       <div class="voice-top">
-        <button type="button" id="micToggleBtn" class="mic-btn" title="แตะเพื่อพูด หรือกด Spacebar">🎙️</button>
+        <button type="button" id="micToggleBtn" class="mic-btn" title="แตะเพื่อเปิด/ปิดไมโครโฟน หรือกดปุ่ม Spacebar">🎙️</button>
         <div class="voice-status-box">
           <div id="voiceStateLabel" class="voice-state-label">
-            <span id="voiceStateText">แตะปุ่มไมโครโฟน (หรือเคาะ Spacebar) เพื่อพูดสั่งสินค้า</span>
+            <span id="voiceStateText">แตะปุ่มไมโครโฟน (หรือเคาะ Spacebar) เพื่อพูดสั่งสินค้าตามรายการในคลัง</span>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <label style="font-size:0.78rem; color:var(--muted); cursor:pointer;">
-                <input type="checkbox" id="useBackendGeminiCheckbox" checked>
-                ✨ ใช้ Gemini AI หลังบ้านช่วยแยกบิล (เมื่อเชื่อม Sheets)
+              <label style="font-size:0.78rem; color:var(--brand); cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                <input type="checkbox" id="directGeminiAudioCheckbox">
+                ✨ ส่งเสียงให้ Gemini ฟังโดยตรง
               </label>
-              <label style="font-size:0.78rem; color:var(--muted); cursor:pointer;">
+              <label style="font-size:0.78rem; color:var(--muted); cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
                 <input type="checkbox" id="continuousMicCheckbox" checked>
                 โหมดฟังต่อเนื่อง
               </label>
@@ -346,46 +541,44 @@
           </div>
           <div id="liveInterimBox" class="live-transcript-preview" hidden>กำลังฟัง: ...</div>
           <form id="voiceCommandForm" class="voice-command-input-row">
-            <input type="text" id="commandInput" class="input" placeholder='พูดหรือพิมพ์ เช่น "กาแฟอาราบิก้า 3 ถุง กับแก้วดริป 1 ใบ ลดให้ 20 บาท"' autocomplete="off">
+            <input type="text" id="commandInput" class="input" placeholder="พูดชื่อสินค้า จำนวน ส่วนลด หรือสั่ง บิลเชื่อ / เคลียร์บิล ตามข้อมูลใน Sheet ของร้าน..." autocomplete="off">
             <button type="submit" class="btn btn-primary">ประมวลผลคำสั่ง</button>
           </form>
         </div>
       </div>
 
       <div class="quick-phrases">
-        <span style="font-size:0.75rem; color:var(--muted);">คลิกทดสอบประโยคที่เคยมีปัญหา (แก้บั๊กชื่อซ้ำและจำนวนเพี้ยนแล้ว):</span>
-        <div class="chip-list">
-          <button type="button" class="chip-btn" data-phrase="กาแฟอาราบิก้า 3 ถุง">"กาแฟอาราบิก้า 3 ถุง"</button>
-          <button type="button" class="chip-btn" data-phrase="กาแฟคั่วบดสองถุง กับแก้วดริปหนึ่งใบ ลดให้ยี่สิบบาท">"กาแฟคั่วบดสองถุง กับแก้วดริปหนึ่งใบ ลดให้ยี่สิบบาท"</button>
-          <button type="button" class="chip-btn" data-phrase="กาแฟอาราบิก้า 2 ถุง บิลเชื่อ เจ๊หมวย">"กาแฟอาราบิก้า 2 ถุง บิลเชื่อ เจ๊หมวย"</button>
-          <button type="button" class="chip-btn" data-phrase="ยืนยันออกบิล">"ยืนยันออกบิล"</button>
-        </div>
+        <span class="quick-phrases-label">ชุดคำสั่งเสียงตัวอย่าง (สร้างอัตโนมัติจากรายการสินค้าและลูกหนี้ในคลังปัจจุบัน):</span>
+        <div class="chip-list" id="dynamicQuickPhrases"></div>
       </div>
 
       <div class="ai-response-bar">
-        <div><strong>AI Live Speak:</strong> <span id="aiResponseText">พร้อมรับคำสั่งค่ะ ทดลองพูดหรือกดปุ่ม "กาแฟอาราบิก้า 3 ถุง" ด้านบนได้เลยค่ะ</span></div>
+        <div><strong>AI Live Speak:</strong> <span id="aiResponseText">พร้อมรับคำสั่งค่ะ ระบบจะอ้างอิงชื่อสินค้า คำพ้องเสียง และลูกหนี้จากตารางใน Google Sheets ของร้านโดยอัตโนมัติ</span></div>
         <button type="button" id="speakToggleBtn" class="btn btn-secondary btn-sm">🔊 เสียงตอบรับ: เปิด</button>
       </div>
     </section>
 
-    <!-- Customer Display (No QR Code) -->
+    <!-- Customer Display Section -->
     <section id="customerDisplaySection" hidden>
       <div class="cfd-banner">
         <div class="cfd-top-bar">
           <div>
-            <h2 style="margin:0; font-size:1.35rem;">🛒 รายการสินค้าและยอดชำระ (หน้าจอลูกค้า)</h2>
+            <h2 class="cfd-store-title">🛒 รายการสินค้าและยอดชำระ (หน้าจอสำหรับลูกค้า)</h2>
+            <p style="margin:4px 0 0; font-size:0.85rem; color:#94a3b8;">แสดงรายการสินค้าและยอดชำระสุทธิแบบเรียลไทม์</p>
           </div>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <span class="badge badge-brand" id="cfdBillBadge">BILL-002</span>
-            <span class="badge badge-success" id="cfdPaymentStatusBadge">💵 ชำระเงินสด / โอน</span>
-            <button type="button" id="cfdConfirmBtn" class="btn btn-primary btn-sm">✓ ยืนยันออกบิล</button>
-            <button type="button" id="cfdBackToCashierBtn" class="btn btn-secondary btn-sm">← กลับหน้าแคชเชียร์</button>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <span class="badge badge-brand" id="cfdBillBadge" style="font-size:0.9rem; padding:6px 14px;">BILL-002</span>
+            <span class="badge badge-success" id="cfdPaymentStatusBadge" style="font-size:0.9rem; padding:6px 14px;">💵 ชำระเงินสด / โอน</span>
+            <button type="button" id="cfdConfirmBtn" class="btn btn-primary btn-sm">✓ ยืนยันออกบิลทันที</button>
+            <button type="button" id="cfdBackToCashierBtn" class="btn btn-secondary btn-sm">← กลับหน้าจอแคชเชียร์</button>
           </div>
         </div>
+
         <div class="cfd-items-panel">
           <div>
-            <div style="display:flex; justify-content:space-between; color:#94a3b8; margin-bottom:12px;">
-              <span>รายการสินค้า</span><span id="cfdTotalItemsLabel">0 ชิ้น</span>
+            <div style="display:flex; justify-content:space-between; color:#94a3b8; font-size:0.95rem; margin-bottom:12px;">
+              <span>รายการสินค้าในบิลปัจจุบัน</span>
+              <span id="cfdTotalItemsLabel">0 ชิ้น</span>
             </div>
             <div id="cfdItemsList"></div>
           </div>
@@ -393,7 +586,7 @@
             <div class="cfd-sub-row"><span>ยอดรวมก่อนลด</span><span id="cfdSubtotal">฿0</span></div>
             <div class="cfd-sub-row"><span>ส่วนลดท้ายบิล</span><span id="cfdDiscount" style="color:#fda4af;">-฿0</span></div>
             <div class="cfd-net-row">
-              <span style="font-size:1.3rem; font-weight:700;">ยอดชำระสุทธิ</span>
+              <span class="cfd-net-label" id="cfdNetLabel">ยอดชำระสุทธิ</span>
               <span class="cfd-net-amount" id="cfdNetTotal">฿0.00</span>
             </div>
           </div>
@@ -401,28 +594,31 @@
       </div>
     </section>
 
-    <!-- Cashier Workspace -->
+    <!-- Cashier Workspace Grid -->
     <div class="workspace-grid" id="cashierWorkspaceGrid">
       <div class="card">
         <div class="tabs">
-          <button type="button" class="tab-btn active" data-tab="products">📦 แท็บ Products</button>
-          <button type="button" class="tab-btn" data-tab="bills">📒 แท็บ Bills &amp; ลูกหนี้ <span class="badge badge-warning" id="unpaidCountBadge">1 ค้างชำระ</span></button>
-          <button type="button" class="tab-btn" data-tab="transactions">📑 แท็บ Transactions</button>
+          <button type="button" class="tab-btn active" data-tab="products" id="tabProductsBtn">📦 แท็บ Products</button>
+          <button type="button" class="tab-btn" data-tab="bills" id="tabBillsBtn">📒 แท็บ Bills &amp; ลูกหนี้ <span class="badge badge-warning" id="unpaidCountBadge">1 ค้างชำระ</span></button>
+          <button type="button" class="tab-btn" data-tab="transactions" id="tabTransactionsBtn">📑 แท็บ Transactions</button>
         </div>
 
         <div id="panelProducts">
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>SKU</th><th>ชื่อสินค้า / คำเรียกด้วยเสียง</th><th>หมวดหมู่</th><th class="num">ราคาขาย</th><th class="num">คงเหลือ</th><th class="num">จัดการ</th></tr>
+                <tr>
+                  <th>SKU</th><th>ชื่อสินค้า / คำพ้องเสียง (Voice_Alias)</th><th>หมวดหมู่</th><th class="num">ราคาขาย</th><th class="num">คงเหลือ</th><th>สถานะ</th><th class="num">จัดการ</th>
+                </tr>
               </thead>
               <tbody id="productsTableBody"></tbody>
             </table>
           </div>
           <form id="addProductForm" class="add-product-form">
-            <div><label class="field-label">SKU</label><input type="text" id="newSku" class="input" placeholder="CF-006" required></div>
-            <div><label class="field-label">ชื่อสินค้า</label><input type="text" id="newName" class="input" placeholder="น้ำเชื่อมวานิลลา" required></div>
-            <div><label class="field-label">คำพูดติดปาก (คั่นด้วย ,)</label><input type="text" id="newAlias" class="input" placeholder="น้ำเชื่อม, วานิลลา"></div>
+            <div><label class="field-label">SKU</label><input type="text" id="newSku" class="input" placeholder="P-005" required></div>
+            <div><label class="field-label">ชื่อสินค้า</label><input type="text" id="newName" class="input" placeholder="ชื่อสินค้าในร้าน" required></div>
+            <div><label class="field-label">คำเรียก/คำพ้องเสียง (คั่นด้วย ,)</label><input type="text" id="newAlias" class="input" placeholder="คำเรียกสั้น, คำพ้องเสียง"></div>
+            <div><label class="field-label">หน่วยนับ</label><input type="text" id="newUnit" class="input" placeholder="ชิ้น, ถุง, กล่อง" value="ชิ้น"></div>
             <div><label class="field-label">ราคาขาย</label><input type="number" id="newPrice" class="input" min="1" required></div>
             <div><label class="field-label">สต็อกตั้งต้น</label><input type="number" id="newStock" class="input" min="0" required></div>
             <div><button type="submit" class="btn btn-secondary" style="width:100%;">+ เพิ่มสินค้า</button></div>
@@ -430,15 +626,23 @@
         </div>
 
         <div id="panelBills" hidden>
+          <div class="section-header">
+            <h3 class="section-title">สรุปยอดตามไตรมาส &amp; ลูกหนี้ค้างชำระ</h3>
+            <select id="quarterFilterSelect" class="input" style="width:auto; padding:6px 10px;">
+              <option value="ALL">ทุกไตรมาส</option>
+            </select>
+          </div>
           <div class="kpi-grid">
-            <div class="kpi-card"><div class="field-label">ยอดขายรวม</div><div class="kpi-val" id="kpiTotalSales">฿0</div></div>
-            <div class="kpi-card"><div class="field-label">เงินสดรับจริง</div><div class="kpi-val" id="kpiCashReceived" style="color:var(--success);">฿0</div></div>
-            <div class="kpi-card"><div class="field-label">ค้างชำระ (บิลเชื่อ)</div><div class="kpi-val" id="kpiUnpaidTotal" style="color:var(--warning);">฿0</div></div>
+            <div class="kpi-card"><div class="kpi-label">ยอดขายรวมตามบิล</div><div class="kpi-val" id="kpiTotalSales">฿0</div></div>
+            <div class="kpi-card kpi-cash"><div class="kpi-label">เงินสดรับจริง</div><div class="kpi-val" id="kpiCashReceived" style="color:var(--success);">฿0</div></div>
+            <div class="kpi-card kpi-credit"><div class="kpi-label">ยอดค้างชำระรวม</div><div class="kpi-val" id="kpiUnpaidTotal" style="color:var(--warning);">฿0</div></div>
           </div>
           <div id="debtorSummaryGrid" class="debtor-summary-grid"></div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>เลขบิล</th><th>วัน-เวลา</th><th class="num">ยอดสุทธิ</th><th>สถานะ</th><th>ผู้เชื่อ</th><th>วันที่จ่าย</th></tr></thead>
+              <thead>
+                <tr><th>เลขบิล</th><th>วัน-เวลา</th><th>ไตรมาส</th><th class="num">ยอดสุทธิ</th><th>สถานะ</th><th>ผู้เชื่อ</th><th>วันที่จ่าย</th></tr>
+              </thead>
               <tbody id="billsTableBody"></tbody>
             </table>
           </div>
@@ -447,7 +651,9 @@
         <div id="panelTransactions" hidden>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>รหัส</th><th>เวลา</th><th>ประเภท</th><th>SKU</th><th>รายการ</th><th class="num">จำนวน</th><th class="num">ยอดเงิน</th><th>อ้างอิง</th></tr></thead>
+              <thead>
+                <tr><th>รหัส</th><th>เวลา</th><th>ประเภท</th><th>SKU</th><th>รายการ</th><th class="num">จำนวน</th><th class="num">ยอดเงิน</th><th>อ้างอิง</th></tr>
+              </thead>
               <tbody id="transactionsTableBody"></tbody>
             </table>
           </div>
@@ -466,17 +672,20 @@
         </div>
 
         <div id="debtorBox" class="debtor-box" hidden>
-          <label class="field-label" style="color:#92400e;">ชื่อผู้เชื่อสินค้า (Debtor_Name)</label>
-          <input type="text" id="debtorNameInput" class="input" placeholder="เช่น เจ๊หมวย, เฮียศักดิ์">
-          <div class="debtor-quick-list">
-            <button type="button" class="debtor-chip" data-debtor="เจ๊หมวย">เจ๊หมวย</button>
-            <button type="button" class="debtor-chip" data-debtor="เฮียศักดิ์">เฮียศักดิ์</button>
-          </div>
+          <label class="field-label" style="color:#92400e;">ระบุชื่อผู้เชื่อสินค้า (Debtor_Name)</label>
+          <input type="text" id="debtorNameInput" class="input" placeholder="ระบุชื่อลูกค้าที่มาเชื่อสินค้า">
+          <div class="debtor-quick-list" id="dynamicDebtorChips"></div>
         </div>
 
         <div class="bill-meta-grid">
-          <div><label class="field-label">สถานะผู้ซื้อ</label><input type="text" id="customerNameInput" class="input" value="ลูกค้าทั่วไป" readonly></div>
-          <div><label class="field-label">ส่วนลด (บาท)</label><input type="number" id="discountInput" class="input" min="0" value="0"></div>
+          <div>
+            <label class="field-label">สถานะผู้ซื้อ</label>
+            <input type="text" id="customerNameInput" class="input" value="ลูกค้าทั่วไป (ไม่เก็บประวัติ)" readonly>
+          </div>
+          <div>
+            <label class="field-label">ส่วนลดท้ายบิล (บาท)</label>
+            <input type="number" id="discountInput" class="input" min="0" value="0">
+          </div>
         </div>
 
         <div id="billItemsContainer" class="bill-items-list"></div>
@@ -497,37 +706,59 @@
     </div>
   </main>
 
-  <!-- Login Modal (Zero Hardcoded Secrets) -->
-  <div class="login-overlay" id="loginOverlay">
+  <!-- Login, Gemini API & Google Sheets Cloud Sync Modal -->
+  <div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true">
     <div class="login-card no-print">
-      <h2 style="margin:0 0 4px; font-size:1.1rem;">🔐 เข้าสู่ระบบ &amp; เชื่อมต่อ Google Sheets</h2>
-      <p style="margin:0 0 14px; font-size:0.78rem; color:var(--muted);">
-        ปลอดภัย 100%: ไม่ต้องใส่ Gemini API Key ในหน้าเว็บ (ซ่อนคีย์ไว้ใน <code>Code.gs</code> หลังบ้าน)
-      </p>
+      <div class="login-header">
+        <div class="brand-icon">🔐</div>
+        <div>
+          <h2 style="margin:0; font-size:1.1rem;">เชื่อมฐานข้อมูลร้านค้า (Google Sheets &amp; Gemini AI)</h2>
+          <p style="margin:2px 0 0; font-size:0.75rem; color:var(--muted);">รองรับการใช้งานหลายร้านค้า — เพียงเปลี่ยนลิงก์ Web App URL ของร้านนั้น</p>
+        </div>
+      </div>
+
       <div id="loginStatusBanner" class="sync-status-msg" hidden></div>
+
       <form id="loginSyncForm">
-        <div style="margin-bottom:12px;">
-          <label class="field-label">1. ลิงก์ Google Apps Script Web App URL (/exec)</label>
+        <div style="margin-bottom:10px;">
+          <label class="field-label" for="gasWebAppUrlInput">1. ลิงก์ Google Apps Script Web App URL ของร้าน (/exec)</label>
           <input type="url" id="gasWebAppUrlInput" class="input" placeholder="https://script.google.com/macros/s/.../exec">
         </div>
-        <div style="margin-bottom:12px;">
-          <label class="field-label">2. รหัสผ่านส่วนตัว (SECRET_KEY / PIN ใน Code.gs)</label>
+
+        <div style="margin-bottom:10px;">
+          <label class="field-label" for="secretPinInput">2. รหัสผ่านส่วนตัวของร้าน (SECRET_KEY ใน Script Properties)</label>
           <input type="password" id="secretPinInput" class="input" placeholder="เช่น POS-2026-SECRET">
         </div>
-        <div style="margin:12px 0;">
+
+        <div style="padding:12px; background:var(--brand-soft); border:1px solid var(--brand-border); border-radius:var(--radius-sm); margin-bottom:12px;">
+          <div style="font-weight:700; font-size:0.82rem; color:var(--brand); margin-bottom:6px;">
+            ✨ ตัวเลือกเสริม: ใส่ Gemini API Key ที่หน้าเว็บ (เว้นว่างได้หากใส่ไว้ใน Script Properties หลังบ้านแล้ว)
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr auto; gap:8px;">
+            <input type="password" id="geminiApiKeyInput" class="input" placeholder="AIzaSy... (ไม่บังคับหากตั้งใน Script Properties แล้ว)">
+            <select id="geminiModelSelect" class="input" style="width:auto;">
+              <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+              <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+              <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin:10px 0;">
           <label class="radio-card">
             <input type="radio" name="persistMode" value="REMEMBER" checked>
-            <div><strong>จำรหัสในเครื่องนี้อัตโนมัติ (Remember Device)</strong></div>
+            <div><strong>จำการตั้งค่าร้านนี้ไว้ในเครื่องอัตโนมัติ (Remember Device)</strong></div>
           </label>
           <label class="radio-card">
             <input type="radio" name="persistMode" value="SESSION">
             <div><strong>ถามรหัส PIN ทุกครั้งที่เปิดหน้าเว็บใหม่ (Session Lock)</strong></div>
           </label>
         </div>
+
         <div style="display:flex; flex-direction:column; gap:8px;">
-          <button type="submit" class="btn btn-primary">🔐 เข้าสู่ระบบและดึงข้อมูล</button>
+          <button type="submit" id="connectSheetsSubmitBtn" class="btn btn-primary" style="width:100%;">💾 เชื่อมต่อฐานข้อมูลร้านค้า</button>
           <div style="display:flex; gap:8px;">
-            <button type="button" id="useDemoModeBtn" class="btn btn-secondary" style="flex:1;">🧪 ทดลองใช้โหมดข้อมูลตัวอย่าง</button>
+            <button type="button" id="useDemoModeBtn" class="btn btn-secondary" style="flex:1;">🧪 ทดลองด้วยข้อมูลตัวอย่าง</button>
             <button type="button" id="clearSavedCredentialsBtn" class="btn btn-danger-outline btn-sm">ล้างค่าที่จำไว้</button>
           </div>
         </div>
@@ -535,11 +766,11 @@
     </div>
   </div>
 
-  <!-- Receipt Modal -->
+  <!-- Printable Receipt Modal -->
   <div class="modal-backdrop" id="receiptModal">
     <div class="receipt-modal">
       <div class="section-header no-print">
-        <h3 class="section-title">✅ ออกบิลสำเร็จ</h3>
+        <h3 class="section-title">✅ ออกบิลและตัดสต็อกสำเร็จ</h3>
         <div style="display:flex; gap:6px;">
           <button type="button" class="format-btn" data-print-format="a5">📄 A5</button>
           <button type="button" class="format-btn active" data-print-format="a4-dup">📑 A4 (ต้นฉบับ+สำเนา)</button>
@@ -548,30 +779,29 @@
       </div>
       <div id="receiptContent" class="receipt-paper"></div>
       <div class="no-print" style="display:flex; gap:8px; justify-content:flex-end;">
-        <button type="button" id="printReceiptBtn" class="btn btn-secondary">🖨️ สั่งพิมพ์ (Print)</button>
+        <button type="button" id="printReceiptBtn" class="btn btn-secondary">🖨️ สั่งพิมพ์ใบเสร็จ (Print)</button>
         <button type="button" id="closeReceiptBtn" class="btn btn-primary">ปิดหน้าต่าง</button>
       </div>
     </div>
   </div>
 
   <script>
+    // ข้อมูลตัวอย่างเริ่มต้น (เมื่อเชื่อมต่อ Google Sheets ระบบจะแทนที่ด้วยข้อมูลจาก Sheet ของร้านนั้นทั้งหมด)
     const products = [
-      { sku: 'CF-001', name: 'กาแฟคั่วบด', aliases: ['กาแฟคั่วบด', 'กาแฟบด', 'คั่วบด'], category: 'เมล็ดกาแฟ', unit: 'ถุง', cost: 160, price: 250, minStock: 5 },
-      { sku: 'CF-002', name: 'เมล็ดกาแฟอาราบิก้า', aliases: ['เมล็ดกาแฟอาราบิก้า', 'กาแฟอาราบิก้า', 'อาราบิก้า', 'เมล็ดกาแฟ'], category: 'เมล็ดกาแฟ', unit: 'ถุง', cost: 220, price: 350, minStock: 5 },
-      { sku: 'EQ-001', name: 'แก้วดริป', aliases: ['แก้วดริป', 'ดริปเปอร์', 'แก้ว'], category: 'อุปกรณ์', unit: 'ใบ', cost: 200, price: 350, minStock: 3 },
-      { sku: 'EQ-002', name: 'กระดาษกรอง', aliases: ['กระดาษกรอง', 'กระดาษดริป', 'กระดาษ'], category: 'อุปกรณ์', unit: 'กล่อง', cost: 65, price: 120, minStock: 8 }
+      { sku: 'P-001', name: 'สินค้าตัวอย่าง A (ขนาดมาตรฐาน)', aliases: ['สินค้าตัวอย่าง A', 'สินค้าเอ', 'ตัวเอ'], category: 'สินค้าทั่วไป', unit: 'ชิ้น', cost: 60, price: 100, minStock: 5 },
+      { sku: 'P-002', name: 'สินค้าตัวอย่าง A พิเศษ (รุ่นพรีเมียม)', aliases: ['สินค้าตัวอย่าง A พิเศษ', 'เอพิเศษ', 'รุ่นพรีเมียม'], category: 'สินค้าทั่วไป', unit: 'กล่อง', cost: 150, price: 250, minStock: 5 },
+      { sku: 'P-003', name: 'วัสดุสิ้นเปลือง B', aliases: ['วัสดุสิ้นเปลือง B', 'วัสดุบี', 'ตัวบี'], category: 'อุปกรณ์', unit: 'แพ็ค', cost: 80, price: 120, minStock: 5 }
     ];
 
     const transactions = [
-      { id: 'TX-1001', time: '09:00', type: 'IN', sku: 'CF-001', name: 'กาแฟคั่วบด', qty: 20, unitPrice: 160, actor: 'ยอดยกมา' },
-      { id: 'TX-1002', time: '09:00', type: 'IN', sku: 'CF-002', name: 'เมล็ดกาแฟอาราบิก้า', qty: 15, unitPrice: 220, actor: 'ยอดยกมา' },
-      { id: 'TX-1003', time: '09:00', type: 'IN', sku: 'EQ-001', name: 'แก้วดริป', qty: 10, unitPrice: 200, actor: 'ยอดยกมา' },
-      { id: 'TX-1004', time: '09:00', type: 'IN', sku: 'EQ-002', name: 'กระดาษกรอง', qty: 25, unitPrice: 65, actor: 'ยอดยกมา' },
-      { id: 'TX-1005', time: '11:30', type: 'OUT', sku: 'CF-001', name: 'กาแฟคั่วบด', qty: 2, unitPrice: 250, actor: 'BILL-001' }
+      { id: 'TX-1001', time: '09:00', type: 'IN', sku: 'P-001', name: 'สินค้าตัวอย่าง A (ขนาดมาตรฐาน)', qty: 30, unitPrice: 60, actor: 'ยอดยกมา' },
+      { id: 'TX-1002', time: '09:00', type: 'IN', sku: 'P-002', name: 'สินค้าตัวอย่าง A พิเศษ (รุ่นพรีเมียม)', qty: 20, unitPrice: 150, actor: 'ยอดยกมา' },
+      { id: 'TX-1003', time: '09:00', type: 'IN', sku: 'P-003', name: 'วัสดุสิ้นเปลือง B', qty: 25, unitPrice: 80, actor: 'ยอดยกมา' },
+      { id: 'TX-1004', time: '11:30', type: 'OUT', sku: 'P-001', name: 'สินค้าตัวอย่าง A (ขนาดมาตรฐาน)', qty: 2, unitPrice: 100, actor: 'BILL-001 (บิลเชื่อ - ลูกค้าประจำ A)' }
     ];
 
     const bills = [
-      { billNo: 'BILL-001', dateStr: '09/11/2026', timeStr: '11:30', subtotal: 500, discount: 0, netTotal: 500, paymentStatus: 'UNPAID', debtorName: 'เจ๊หมวย', paidDate: '-', quarterYear: 'Q4-2026', items: [{ sku: 'CF-001', name: 'กาแฟคั่วบด', unit: 'ถุง', qty: 2, price: 250, lineTotal: 500 }] }
+      { billNo: 'BILL-001', dateStr: '09/11/2026', timeStr: '11:30', subtotal: 200, discount: 0, netTotal: 200, paymentStatus: 'UNPAID', debtorName: 'ลูกค้าประจำ A', paidDate: '-', quarterYear: 'Q4-2026', items: [{ sku: 'P-001', name: 'สินค้าตัวอย่าง A (ขนาดมาตรฐาน)', unit: 'ชิ้น', qty: 2, price: 100, lineTotal: 200 }] }
     ];
 
     let currentBillItems = [];
@@ -583,8 +813,67 @@
 
     let activeScriptUrl = '';
     let activeSecretPin = '';
+    let activeGeminiKey = '';
+    let activeGeminiModel = 'gemini-2.5-flash';
     let isCloudConnected = false;
-    let backendHasGeminiKey = false;
+    let backendHasGemini = false;
+
+    function getActiveDebtorsList() {
+      return Array.from(new Set(
+        bills
+          .filter(b => b.paymentStatus === 'UNPAID' && b.debtorName)
+          .map(b => b.debtorName.trim())
+      ));
+    }
+
+    // สร้างปุ่มตัวอย่างคำสั่งเสียงและปุ่มรายชื่อลูกหนี้อัตโนมัติตามข้อมูลจริงใน Sheet ของร้านนั้น
+    function renderDynamicStoreHelpers() {
+      const phraseContainer = document.getElementById('dynamicQuickPhrases');
+      const debtorChipsContainer = document.getElementById('dynamicDebtorChips');
+      const p1 = products[0];
+      const p2 = products[1] || products[0];
+      const debtors = getActiveDebtorsList();
+      const sampleDebtor = debtors[0] || 'ลูกค้าประจำ';
+
+      if (phraseContainer && p1) {
+        const samplePhrases = [
+          `${p2.name} 3 ${p2.unit}`,
+          `${p1.name} 2 ${p1.unit} ลดให้ 10 บาท`,
+          `${p1.name} 5 ${p1.unit} บิลเชื่อ ${sampleDebtor}`,
+          `เคลียร์บิลเชื่อ ${sampleDebtor}`,
+          `ยืนยันออกบิล`
+        ];
+        phraseContainer.innerHTML = samplePhrases.map(ph =>
+          `<button type="button" class="chip-btn" data-phrase="${ph}">"${ph}"</button>`
+        ).join('');
+        phraseContainer.querySelectorAll('.chip-btn').forEach(btn => {
+          btn.addEventListener('click', () => processVoiceCommand(btn.dataset.phrase));
+        });
+      }
+
+      if (debtorChipsContainer) {
+        const chipNames = debtors.length > 0 ? debtors : ['ลูกค้าประจำ A', 'ร้านค้า B'];
+        debtorChipsContainer.innerHTML = `<span style="font-size:0.75rem; color:#92400e; align-self:center;">รายชื่อลูกหนี้ในระบบ:</span>` +
+          chipNames.map(name => `<button type="button" class="debtor-chip" data-debtor="${name}">${name}</button>`).join('');
+        debtorChipsContainer.querySelectorAll('.debtor-chip').forEach(chip => {
+          chip.addEventListener('click', () => setPaymentMode('CREDIT', chip.dataset.debtor));
+        });
+      }
+    }
+
+    function updateAiBadge() {
+      const badge = document.getElementById('aiEngineBadge');
+      if (backendHasGemini) {
+        badge.className = 'badge badge-success';
+        badge.textContent = '✨ ใช้ Gemini AI หลังบ้าน (Script Properties)';
+      } else if (activeGeminiKey) {
+        badge.className = 'badge badge-success';
+        badge.textContent = `✨ เชื่อมต่อ ${activeGeminiModel} แล้ว`;
+      } else {
+        badge.className = 'badge badge-brand';
+        badge.textContent = '🧠 โหมด Universal Longest-Match Parser';
+      }
+    }
 
     function normalizeThaiSpeech(rawText) {
       let out = rawText;
@@ -605,7 +894,9 @@
         out = out.replace(new RegExp(word, 'g'), digit);
       }
       const thaiDigits = ['๐','๑','๒','๓','๔','๕','๖','๗','๘','๙'];
-      thaiDigits.forEach((d, idx) => { out = out.replace(new RegExp(d, 'g'), String(idx)); });
+      thaiDigits.forEach((d, idx) => {
+        out = out.replace(new RegExp(d, 'g'), String(idx));
+      });
       return out.replace(/\s+/g, ' ').trim();
     }
 
@@ -625,6 +916,310 @@
       } catch (e) {}
     }
 
+    // =========================================================================
+    // สร้าง Universal Pre-Prompt แบบไม่ระบุประเภทร้านตายตัว แต่แนบข้อมูลจาก Sheet ของร้านนั้นเข้าไป
+    // =========================================================================
+    function buildUniversalPosPrePrompt() {
+      const catalogList = products.map(p => ({
+        sku: p.sku,
+        name: p.name,
+        aliases: p.aliases,
+        unit: p.unit,
+        price: p.price
+      }));
+      const activeDebtors = getActiveDebtorsList();
+
+      return [
+        "คุณคือระบบ AI ประมวลผลคำสั่งเสียงหน้าร้าน (Universal Voice POS Parser) สำหรับร้านค้าทั่วไป",
+        "หน้าที่ของคุณคือวิเคราะห์คำสั่งเสียงของแคชเชียร์ แล้วจับคู่กับข้อมูลคลังสินค้าและรายชื่อลูกหนี้ที่แนบมาจาก Google Sheets ของร้านนี้เท่านั้น",
+        "",
+        "[1. ข้อมูลคลังสินค้าของร้านจาก Google Sheets (Products)]",
+        JSON.stringify(catalogList),
+        "",
+        "[2. รายชื่อลูกหนี้ค้างชำระในระบบปัจจุบันจาก Google Sheets (Active Debtors)]",
+        JSON.stringify(activeDebtors),
+        "",
+        "[3. กฎการตีความมาตรฐาน (Universal Matching Rules)]",
+        "1) การแก้คำพ้องเสียง (Phonetic & Unit Matching): ระบบรับเสียงอาจสะกดคำตกหล่นหรือตัดคำควบกล้ำ ให้พิจารณาเทียบจากเสียงอ่านที่ใกล้เคียงที่สุดใน name และ aliases ร่วมกับหน่วยนับ (unit) ของสินค้าในตาราง [1] เสมอ",
+        "2) การแยกแยะสินค้าชื่อคล้ายกัน (Specificity Priority): หากมีสินค้าหลายรายการที่มีคำต้นเหมือนกัน ต้องเลือกจับคู่กับรายการที่มีชื่อหรือคำเรียกตรงกับคำพูดอย่างเฉพาะเจาะจงที่สุดก่อนเสมอ",
+        "3) การอ่านจำนวน (Quantity Extraction): แปลงตัวเลขหรือคำบอกจำนวนหลังชื่อสินค้าให้เป็นตัวเลขจำนวนเต็มที่ถูกต้อง (หากไม่ระบุจำนวนให้ใช้ 1)",
+        "4) การจำแนกประเภทคำสั่ง (Action Classification):",
+        "   - 'ADD_ITEMS': คำสั่งหยิบสินค้าเข้าบิลปกติ (หากในประโยคมีคำว่า บิลเชื่อ, เงินเชื่อ, เชื่อไว้, ลงบัญชี, แปะโป้ง, ค้างไว้ก่อน, ติดไว้ก่อน, จ่ายทีหลัง ให้ตั้งค่า isCredit = true และดึงชื่อผู้เชื่อใส่ใน debtorName)",
+        "   - 'SETTLE_DEBT': เมื่อมีคำว่า เคลียร์บิล, เคลียร์หนี้, เคลียร์ยอด, จ่ายหนี้, ใช้หนี้, มาจ่ายแล้ว, รับชำระหนี้, ปิดยอดค้าง ให้ตั้งค่า action = 'SETTLE_DEBT' และจับคู่ชื่อลูกหนี้ให้ตรงกับรายการใน [2] มากที่สุด",
+        "   - 'RESTOCK': เมื่อมีคำว่า รับเข้าสต็อก, เติมสต็อก, ของเข้า ให้ตั้งค่า action = 'RESTOCK' พร้อมระบุ items (sku และ qty)",
+        "   - 'CONFIRM_BILL': เมื่อพูดว่า ยืนยัน, ยืนยันออกบิล, ออกบิลเลย, คิดเงิน, คิดตังค์, เช็คบิล",
+        "   - 'CLEAR_BILL': เมื่อพูดว่า ล้างบิล, ยกเลิกบิล, เริ่มบิลใหม่",
+        "   - 'PRINT_BILL': เมื่อพูดว่า พิมพ์บิล, สั่งพิมพ์, ปริ้นบิล, พิมพ์ใบเสร็จ",
+        "",
+        "5) ตอบกลับเป็น JSON ตามโครงสร้างนี้เท่านั้น:",
+        "{",
+        '  "transcript": "ข้อความภาษาไทยที่ได้ยิน",',
+        '  "action": "ADD_ITEMS" | "SETTLE_DEBT" | "RESTOCK" | "CONFIRM_BILL" | "CLEAR_BILL" | "PRINT_BILL",',
+        '  "items": [{ "sku": "รหัส SKU จากตาราง [1]", "qty": จำนวนตัวเลข }],',
+        '  "discount": ตัวเลขส่วนลดท้ายบิลหรือ 0,',
+        '  "isCredit": true หรือ false,',
+        '  "debtorName": "ชื่อผู้เชื่อหรือชื่อลูกหนี้ที่นำมาเคลียร์ยอด หรือค่าว่าง"',
+        "}"
+      ].join("\n");
+    }
+
+    async function parseCommandWithGemini({ textCommand = '', audioBase64 = '', mimeType = 'audio/webm' }) {
+      // กรณีตั้งค่า GEMINI_API_KEY ไว้ใน Script Properties หลังบ้าน (Code.gs)
+      if (isCloudConnected && backendHasGemini && !activeGeminiKey) {
+        const res = await callGoogleSheetsApi('GEMINI_PARSE', { textCommand, audioBase64, mimeType });
+        return res.intent;
+      }
+
+      const systemPrompt = buildUniversalPosPrePrompt();
+      const parts = [{ text: systemPrompt }];
+      if (audioBase64) {
+        parts.push({ inlineData: { mimeType, data: audioBase64 } });
+        parts.push({ text: 'จงฟังเสียงพูดนี้และแปลงเป็น JSON ตามข้อมูลร้านค้าที่แนบไว้' });
+      } else {
+        parts.push({ text: `ข้อความที่ได้จากไมโครโฟน: "${textCommand}"` });
+      }
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${activeGeminiModel}:generateContent?key=${encodeURIComponent(activeGeminiKey)}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts }],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: 'application/json'
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Gemini API Error (${response.status}): ${errText}`);
+      }
+
+      const result = await response.json();
+      const rawJson = result?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+      return JSON.parse(rawJson);
+    }
+
+    function settleDebtorByName(targetName) {
+      const cleanName = (targetName || '').trim();
+      document.getElementById('tabBillsBtn').click();
+      const matching = bills.filter(b =>
+        b.paymentStatus === 'UNPAID' &&
+        (!cleanName || b.debtorName.includes(cleanName) || cleanName.includes(b.debtorName))
+      );
+
+      if (matching.length === 0) {
+        speakAndReply(cleanName ? `ไม่พบบิลค้างชำระในชื่อ ${cleanName} ค่ะ` : 'ไม่มีบิลค้างชำระในระบบค่ะ');
+        return;
+      }
+
+      const debtorToClear = matching[0].debtorName;
+      const paidDate = new Date().toLocaleDateString('th-TH');
+      const clearedBillNos = [];
+      let totalPaid = 0;
+
+      bills.forEach(b => {
+        if (b.paymentStatus === 'UNPAID' && b.debtorName === debtorToClear) {
+          b.paymentStatus = 'PAID';
+          b.paidDate = paidDate;
+          totalPaid += b.netTotal;
+          clearedBillNos.push(b.billNo);
+        }
+      });
+
+      if (isCloudConnected) {
+        callGoogleSheetsApi('SETTLE_DEBT', { billNos: clearedBillNos, paidDate }).catch(() => {});
+      }
+
+      renderBillsAndDebtors();
+      renderDynamicStoreHelpers();
+      speakAndReply(`เคลียร์ยอดค้างชำระของ ${debtorToClear} จำนวน ${clearedBillNos.length} บิล รวม ${totalPaid.toLocaleString()} บาท เรียบร้อยค่ะ`);
+    }
+
+    function applyStructuredPosIntent(intent) {
+      if (!intent) return;
+      if (intent.transcript) {
+        document.getElementById('commandInput').value = intent.transcript;
+      }
+
+      if (intent.action === 'CONFIRM_BILL') { confirmCurrentBill(); return; }
+      if (intent.action === 'PRINT_BILL') { window.print(); return; }
+      if (intent.action === 'CLEAR_BILL') {
+        currentBillItems = [];
+        document.getElementById('discountInput').value = 0;
+        setPaymentMode('CASH');
+        renderBill();
+        speakAndReply('ล้างบิลเรียบร้อยค่ะ');
+        return;
+      }
+      if (intent.action === 'SETTLE_DEBT') {
+        settleDebtorByName(intent.debtorName || '');
+        return;
+      }
+      if (intent.action === 'RESTOCK' && Array.isArray(intent.items)) {
+        const restocked = [];
+        const timeStr = new Date().toTimeString().slice(0, 5);
+        intent.items.forEach(it => {
+          const p = products.find(x => x.sku === it.sku);
+          const qty = Math.max(1, Number(it.qty) || 1);
+          if (p) {
+            transactions.push({
+              id: `TX-${1000 + transactions.length + 1}`,
+              time: timeStr,
+              type: 'IN',
+              sku: p.sku,
+              name: p.name,
+              qty,
+              unitPrice: p.cost,
+              actor: 'รับเข้าสต็อกด้วยเสียง'
+            });
+            restocked.push(`${p.name} +${qty} ${p.unit}`);
+          }
+        });
+        renderProducts();
+        renderTransactions();
+        speakAndReply(`รับเข้าสต็อก: ${restocked.join(', ')} เรียบร้อยค่ะ`);
+        return;
+      }
+
+      if (intent.isCredit) {
+        setPaymentMode('CREDIT', (intent.debtorName || '').trim());
+      }
+      if (typeof intent.discount === 'number' && intent.discount > 0) {
+        document.getElementById('discountInput').value = intent.discount;
+      }
+
+      const addedNames = [];
+      if (Array.isArray(intent.items)) {
+        intent.items.forEach(it => {
+          const p = products.find(x => x.sku === it.sku);
+          const qty = Math.max(1, Number(it.qty) || 1);
+          if (p) {
+            addItemToBill(p.sku, qty);
+            addedNames.push(`${p.name} ${qty} ${p.unit}`);
+          }
+        });
+      }
+
+      renderBill();
+      if (addedNames.length > 0 || intent.isCredit || intent.discount) {
+        const discount = Number(document.getElementById('discountInput').value) || 0;
+        const subtotal = currentBillItems.reduce((a, i) => {
+          const p = products.find(x => x.sku === i.sku);
+          return a + (p ? p.price * i.qty : 0);
+        }, 0);
+        const net = Math.max(0, subtotal - discount);
+        const creditTag = currentPaymentMode === 'CREDIT' ? ` (บิลเชื่อ: ${document.getElementById('debtorNameInput').value || 'รอระบุชื่อ'})` : '';
+        speakAndReply(`✨ เพิ่ม ${addedNames.join(', ')}${creditTag} ยอดสุทธิ ${net.toLocaleString()} บาทค่ะ`);
+      } else {
+        speakAndReply('ไม่พบชื่อสินค้าที่ตรงกับฐานข้อมูลของร้านในคำสั่งนี้ค่ะ');
+      }
+    }
+
+    // =========================================================================
+    // อัลกอริทึมสำรองในเครื่องแบบไม่ยึดติดประเภทร้าน (Universal Local Fallback)
+    // =========================================================================
+    function processVoiceCommandLocalFallback(rawText) {
+      if (!rawText || !rawText.trim()) return;
+      const text = normalizeThaiSpeech(rawText);
+
+      if (/^(ยืนยัน|ยืนยันออกบิล|ออกบิลเลย|คิดเงิน|คิดตังค์|เช็คบิล|ชำระเงิน)$/.test(text.replace(/\s+/g, ''))) {
+        confirmCurrentBill();
+        return;
+      }
+      if (/(พิมพ์บิล|สั่งพิมพ์|ปริ้นบิล|พิมพ์ใบเสร็จ)/.test(text)) {
+        window.print();
+        return;
+      }
+      if (/(ล้างบิล|ยกเลิกบิล|เริ่มบิลใหม่)/.test(text)) {
+        currentBillItems = [];
+        document.getElementById('discountInput').value = 0;
+        setPaymentMode('CASH');
+        renderBill();
+        speakAndReply('ล้างบิลเรียบร้อยค่ะ');
+        return;
+      }
+
+      // ตรวจจับคำสั่งเคลียร์หนี้ / รับชำระหนี้บิลเชื่อ
+      const settleRegex = /(?:เคลียร์บิลเชื่อ|เคลียร์บิล|เคลียร์หนี้|เคลียร์ยอด|รับชำระหนี้|จ่ายหนี้|ใช้หนี้|ปิดยอดค้าง|จ่ายบิลค้าง)\s*(?:ของ|ให้|คุณ|ร้าน)?\s*([ก-๙a-zA-Z0-9\s]+)?/;
+      const reverseSettleRegex = /([ก-๙a-zA-Z0-9]+)\s*(?:มาจ่ายหนี้|มาจ่ายตังค์|มาจ่ายบิล|เคลียร์หนี้|เคลียร์บิล|ใช้หนี้)/;
+      const settleMatch = text.match(settleRegex) || text.match(reverseSettleRegex);
+      if (settleMatch && /(เคลียร์|ชำระหนี้|จ่ายหนี้|ใช้หนี้|ปิดยอด|มาจ่าย)/.test(text)) {
+        settleDebtorByName(settleMatch[1] || '');
+        return;
+      }
+
+      // ตรวจจับคำสั่งบิลเงินเชื่อ / แปะโป้ง
+      const creditRegex = /(?:บิลเชื่อ|เงินเชื่อ|เชื่อไว้|ลงบัญชี|แปะโป้ง|ค้างไว้|ติดไว้|ค้างชำระ|จ่ายทีหลัง)\s*(?:ของ|ให้|ที่|ชื่อ)?\s*([ก-๙a-zA-Z0-9]+)?/;
+      const creditMatch = text.match(creditRegex);
+      if (creditMatch) {
+        setPaymentMode('CREDIT', (creditMatch[1] || '').trim());
+      }
+
+      const discMatch = text.match(/(?:ลดให้|ส่วนลด|ลด)\s*(\d+)/);
+      if (discMatch) document.getElementById('discountInput').value = parseInt(discMatch[1], 10);
+
+      // ดึงคำเรียกสินค้าทั้งหมดจากตาราง Products ปัจจุบัน เรียงจากยาวที่สุดไปสั้นที่สุด
+      const allAliasPairs = [];
+      products.forEach(p => {
+        const list = Array.from(new Set([p.name, ...(p.aliases || [])]));
+        list.forEach(alias => {
+          if (alias && alias.trim()) {
+            allAliasPairs.push({ sku: p.sku, product: p, alias: alias.trim() });
+          }
+        });
+      });
+      allAliasPairs.sort((a, b) => b.alias.length - a.alias.length);
+
+      let remainingText = text;
+      const addedList = [];
+
+      for (const pair of allAliasPairs) {
+        const escaped = pair.alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`${escaped}(?:\\s*(?:จำนวน|เอา|สั่ง|เพิ่ม))?\\s*(\\d+)?`, 'i');
+        const m = remainingText.match(regex);
+        if (m) {
+          const qty = m[1] ? parseInt(m[1], 10) : 1;
+          if (qty > 0) {
+            addItemToBill(pair.sku, qty);
+            addedList.push(`${pair.product.name} ${qty} ${pair.product.unit}`);
+            remainingText = remainingText.replace(m[0], ' ');
+          }
+        }
+      }
+
+      renderBill();
+      if (addedList.length > 0 || creditMatch || discMatch) {
+        const discount = Number(document.getElementById('discountInput').value) || 0;
+        const subtotal = currentBillItems.reduce((a, i) => {
+          const p = products.find(x => x.sku === i.sku);
+          return a + (p ? p.price * i.qty : 0);
+        }, 0);
+        const net = Math.max(0, subtotal - discount);
+        const creditTag = currentPaymentMode === 'CREDIT' ? ` (บิลเชื่อ: ${document.getElementById('debtorNameInput').value || 'ระบุชื่อ'})` : '';
+        speakAndReply(`เพิ่ม ${addedList.join(', ')}${creditTag} รวมสุทธิ ${net.toLocaleString()} บาทค่ะ`);
+      } else {
+        speakAndReply(`ได้ยินว่า "${rawText}" แต่ไม่พบชื่อสินค้าที่ตรงกับตารางคลังสินค้าของร้านค่ะ`);
+      }
+    }
+
+    async function processVoiceCommand(rawText) {
+      if (!rawText || !rawText.trim()) return;
+      if (activeGeminiKey || (isCloudConnected && backendHasGemini)) {
+        try {
+          document.getElementById('aiResponseText').textContent = '⏳ Gemini AI กำลังเทียบคำสั่งกับคลังสินค้าของร้าน...';
+          const intent = await parseCommandWithGemini({ textCommand: rawText });
+          applyStructuredPosIntent(intent);
+          return;
+        } catch (err) {
+          console.warn('Gemini fallback to local parser:', err);
+        }
+      }
+      processVoiceCommandLocalFallback(rawText);
+    }
+
     async function callGoogleSheetsApi(action, extraPayload = {}) {
       const response = await fetch(activeScriptUrl, {
         method: 'POST',
@@ -638,10 +1233,19 @@
 
     async function syncFromGoogleSheets() {
       const banner = document.getElementById('loginStatusBanner');
+      if (!activeScriptUrl || !activeSecretPin) {
+        document.getElementById('loginOverlay').hidden = true;
+        updateAiBadge();
+        return;
+      }
       try {
         const data = await callGoogleSheetsApi('LOAD_DATA');
         isCloudConnected = true;
-        backendHasGeminiKey = Boolean(data.hasGeminiKey);
+        backendHasGemini = Boolean(data.hasBackendGemini);
+
+        if (data.storeName) {
+          document.getElementById('storeHeaderTitle').textContent = `AI Voice POS — ${data.storeName}`;
+        }
 
         if (Array.isArray(data.products) && data.products.length > 0) {
           products.length = 0;
@@ -651,9 +1255,14 @@
             const rawAliases = String(r[2] || name).split(',').map(s => s.trim()).filter(Boolean);
             if (!rawAliases.includes(name)) rawAliases.unshift(name);
             products.push({
-              sku: String(r[0]).trim(), name, aliases: rawAliases,
-              category: 'คลังสินค้า', unit: String(r[3] || 'ชิ้น'),
-              cost: Number(r[4]) || 0, price: Number(r[5]) || 0, minStock: Number(r[7]) || 3
+              sku: String(r[0]).trim(),
+              name,
+              aliases: rawAliases,
+              category: 'คลังสินค้า',
+              unit: String(r[3] || 'ชิ้น'),
+              cost: Number(r[4]) || 0,
+              price: Number(r[5]) || 0,
+              minStock: Number(r[7]) || 3
             });
           });
         }
@@ -662,10 +1271,14 @@
           data.transactions.forEach((r, idx) => {
             if (!r[3]) return;
             transactions.push({
-              id: String(r[0] || `TX-${1001 + idx}`), time: String(r[1] || ''),
+              id: String(r[0] || `TX-${1001 + idx}`),
+              time: String(r[1] || ''),
               type: String(r[2]).toUpperCase() === 'OUT' ? 'OUT' : 'IN',
-              sku: String(r[3]).trim(), name: String(r[4] || ''),
-              qty: Number(r[5]) || 0, unitPrice: Number(r[6]) || 0, actor: String(r[7] || '')
+              sku: String(r[3]).trim(),
+              name: String(r[4] || ''),
+              qty: Number(r[5]) || 0,
+              unitPrice: Number(r[6]) || 0,
+              actor: String(r[7] || '')
             });
           });
         }
@@ -676,137 +1289,37 @@
             const dt = String(r[1] || '').split(' ');
             const statusRaw = String(r[3] || '');
             bills.push({
-              billNo: String(r[0]), dateStr: dt[0] || '-', timeStr: dt[1] || '',
-              subtotal: Number(r[2]) || 0, discount: 0, netTotal: Number(r[2]) || 0,
+              billNo: String(r[0]),
+              dateStr: dt[0] || '-',
+              timeStr: dt[1] || '',
+              subtotal: Number(r[2]) || 0,
+              discount: 0,
+              netTotal: Number(r[2]) || 0,
               paymentStatus: statusRaw.includes('ค้าง') || statusRaw === 'UNPAID' ? 'UNPAID' : 'PAID',
               debtorName: r[4] === 'ลูกค้าทั่วไป' ? '' : String(r[4] || ''),
-              paidDate: String(r[5] || '-'), quarterYear: String(r[6] || 'Q4-2026'), items: []
+              paidDate: String(r[5] || '-'),
+              quarterYear: String(r[6] || 'Q4-2026'),
+              items: []
             });
           });
           billCounter = bills.length + 1;
         }
         document.getElementById('cloudSyncBadge').className = 'badge badge-success';
-        document.getElementById('cloudSyncBadge').textContent = backendHasGeminiKey ? '☁️ เชื่อม Sheets + Gemini AI แล้ว' : '☁️ เชื่อมต่อ Google Sheets แล้ว';
+        document.getElementById('cloudSyncBadge').textContent = '☁️ เชื่อมต่อ Google Sheets แล้ว';
         document.getElementById('syncNowHeaderBtn').hidden = false;
         document.getElementById('loginOverlay').hidden = true;
+        updateAiBadge();
         renderProducts();
         renderBillsAndDebtors();
         renderTransactions();
         renderBill();
-        speakAndReply('เข้าสู่ระบบและซิงค์ข้อมูลสำเร็จค่ะ');
+        renderDynamicStoreHelpers();
+        speakAndReply('โหลดข้อมูลสินค้าและลูกหนี้จาก Google Sheets ของร้านเรียบร้อยค่ะ');
       } catch (err) {
         banner.hidden = false;
+        banner.className = 'sync-status-msg error';
         banner.textContent = '❌ ' + err.message;
       }
-    }
-
-    // =========================================================================
-    // อัลกอริทึมใหม่: Global Longest-Match First (แก้บั๊ก "กาแฟอาราบิก้า 3 ถุง" ได้ 100%)
-    // =========================================================================
-    function parseVoiceLocallyLongestMatch(rawText) {
-      const text = normalizeThaiSpeech(rawText);
-
-      if (/(ยืนยัน|ออกบิลเลย|คิดเงิน|ชำระเงิน)/.test(text)) { confirmCurrentBill(); return; }
-      if (/(พิมพ์บิล|สั่งพิมพ์|ปริ้นบิล)/.test(text)) { window.print(); return; }
-      if (/(ล้างบิล|ยกเลิกบิล)/.test(text)) {
-        currentBillItems = [];
-        document.getElementById('discountInput').value = 0;
-        setPaymentMode('CASH');
-        renderBill();
-        speakAndReply('ล้างบิลเรียบร้อยค่ะ');
-        return;
-      }
-
-      const creditMatch = text.match(/(?:บิลเชื่อ|ลงบัญชี|แปะโป้ง|ค้างชำระ)\s*([ก-๙a-zA-Z0-9]+)/);
-      if (creditMatch && creditMatch[1]) setPaymentMode('CREDIT', creditMatch[1]);
-
-      const discMatch = text.match(/(?:ลดให้|ส่วนลด|ลด)\s*(\d+)/);
-      if (discMatch) document.getElementById('discountInput').value = parseInt(discMatch[1], 10);
-
-      // รวมคำเรียกของทุกสินค้าเข้าด้วยกันแล้วเรียงจาก "คำที่ยาวที่สุด -> สั้นที่สุด"
-      // เพื่อให้ "กาแฟอาราบิก้า" ถูกตรวจจับก่อนคำว่า "กาแฟ" เสมอ!
-      const allAliasEntries = [];
-      products.forEach(p => {
-        const list = Array.from(new Set([p.name, ...(p.aliases || [])]));
-        list.forEach(alias => {
-          if (alias && alias.trim()) {
-            allAliasEntries.push({ alias: alias.trim(), product: p });
-          }
-        });
-      });
-      allAliasEntries.sort((a, b) => b.alias.length - a.alias.length);
-
-      let workingText = text;
-      const addedList = [];
-
-      allAliasEntries.forEach(entry => {
-        const escaped = entry.alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        // จับชื่อสินค้า ตามด้วยคำเชื่อม (เช่น เอา/จำนวน) และตัวเลขจำนวน
-        const regex = new RegExp(`${escaped}(?:\\s*(?:จำนวน|เอา|สัก))?\\s*(\\d+)?`, 'i');
-        const m = workingText.match(regex);
-        if (m) {
-          const qty = m[1] ? parseInt(m[1], 10) : 1;
-          if (qty > 0) {
-            addItemToBill(entry.product.sku, qty);
-            addedList.push(`${entry.product.name} ${qty} ${entry.product.unit}`);
-            // ลบคำที่จับคู่แล้วออกจากประโยคทันที เพื่อไม่ให้คำสั้นของสินค้าอื่นมาจับซ้ำ
-            workingText = workingText.replace(m[0], '   ');
-          }
-        }
-      });
-
-      renderBill();
-      if (addedList.length > 0 || creditMatch || discMatch) {
-        const discount = Number(document.getElementById('discountInput').value) || 0;
-        const subtotal = currentBillItems.reduce((a, i) => {
-          const p = products.find(x => x.sku === i.sku);
-          return a + (p ? p.price * i.qty : 0);
-        }, 0);
-        const net = Math.max(0, subtotal - discount);
-        speakAndReply(`เพิ่ม ${addedList.join(', ')} รวมสุทธิ ${net.toLocaleString()} บาทค่ะ`);
-      } else {
-        speakAndReply(`ได้ยินว่า "${rawText}" แต่ไม่พบชื่อสินค้าที่ตรงกันค่ะ`);
-      }
-    }
-
-    async function processVoiceCommand(rawText) {
-      if (!rawText || !rawText.trim()) return;
-      const useBackendAi = document.getElementById('useBackendGeminiCheckbox').checked;
-
-      // หากเชื่อมต่อ Sheets และตั้งค่า GEMINI_API_KEY ไว้ใน Code.gs หลังบ้านแล้ว ให้ใช้ Gemini แยกบิล
-      if (isCloudConnected && backendHasGeminiKey && useBackendAi) {
-        try {
-          document.getElementById('aiResponseText').textContent = '✨ Gemini AI กำลังแยกแยะรายการสินค้า...';
-          const catalog = products.map(p => ({ sku: p.sku, name: p.name, aliases: p.aliases, unit: p.unit, price: p.price }));
-          const res = await callGoogleSheetsApi('GEMINI_PARSE', { text: rawText, catalog });
-          const parsed = res.parsed;
-          if (parsed) {
-            if (parsed.intent === 'CONFIRM') { confirmCurrentBill(); return; }
-            if (parsed.intent === 'CLEAR') { currentBillItems = []; renderBill(); speakAndReply('ล้างบิลเรียบร้อยค่ะ'); return; }
-            if (parsed.intent === 'PRINT') { window.print(); return; }
-            if (parsed.isCredit && parsed.debtorName) setPaymentMode('CREDIT', parsed.debtorName);
-            if (parsed.discount > 0) document.getElementById('discountInput').value = Number(parsed.discount);
-            const added = [];
-            if (Array.isArray(parsed.items)) {
-              parsed.items.forEach(it => {
-                const p = products.find(x => x.sku === it.sku);
-                if (p && it.qty > 0) {
-                  addItemToBill(p.sku, Number(it.qty));
-                  added.push(`${p.name} ${it.qty} ${p.unit}`);
-                }
-              });
-            }
-            renderBill();
-            const net = document.getElementById('billNetTotal').textContent;
-            speakAndReply(`Gemini เพิ่ม ${added.join(', ')} ยอดสุทธิ ${net} ค่ะ`);
-            return;
-          }
-        } catch (e) {
-          // หากคลาวด์ขัดข้อง ให้สลับมาใช้ตัวแยกคำในเครื่องอัตโนมัติ
-        }
-      }
-
-      parseVoiceLocallyLongestMatch(rawText);
     }
 
     function renderCustomerDisplay() {
@@ -819,6 +1332,12 @@
       const net = Math.max(0, subtotal - discount);
 
       document.getElementById('cfdBillBadge').textContent = `BILL-${String(billCounter).padStart(3, '0')}`;
+      const isCredit = currentPaymentMode === 'CREDIT';
+      const debtor = document.getElementById('debtorNameInput').value.trim();
+      const statusBadge = document.getElementById('cfdPaymentStatusBadge');
+      statusBadge.className = isCredit ? 'badge badge-warning' : 'badge badge-success';
+      statusBadge.textContent = isCredit ? `📝 บิลเงินเชื่อ (${debtor || 'รอระบุชื่อ'})` : '💵 ชำระเงินสด / โอน';
+
       document.getElementById('cfdTotalItemsLabel').textContent = `${totalQty} ชิ้น`;
       document.getElementById('cfdSubtotal').textContent = `฿${subtotal.toLocaleString()}`;
       document.getElementById('cfdDiscount').textContent = `-฿${discount.toLocaleString()}`;
@@ -826,11 +1345,11 @@
 
       const listEl = document.getElementById('cfdItemsList');
       if (currentBillItems.length === 0) {
-        listEl.innerHTML = `<div style="padding:48px; text-align:center; color:#94a3b8;">กำลังรอรายการสินค้าจากแคชเชียร์...</div>`;
+        listEl.innerHTML = `<div style="padding:48px; text-align:center; color:#94a3b8; font-size:1.1rem;">กำลังรอรายการสินค้าจากแคชเชียร์...</div>`;
       } else {
         listEl.innerHTML = currentBillItems.map((item, idx) => {
           const p = products.find(x => x.sku === item.sku);
-          return `<div class="cfd-item-row"><span>${idx + 1}. ${p.name}</span><span class="cfd-item-qty">x${item.qty} ${p.unit}</span><span class="cfd-item-price">฿${(p.price * item.qty).toLocaleString()}</span></div>`;
+          return `<div class="cfd-item-row"><span class="cfd-item-name">${idx + 1}. ${p.name}</span><span class="cfd-item-qty">x${item.qty} ${p.unit}</span><span class="cfd-item-price">฿${(p.price * item.qty).toLocaleString()}</span></div>`;
         }).join('');
       }
     }
@@ -852,7 +1371,7 @@
       document.getElementById('debtorBox').hidden = !isCredit;
       if (isCredit && debtorPrefill) document.getElementById('debtorNameInput').value = debtorPrefill;
       const name = document.getElementById('debtorNameInput').value.trim();
-      document.getElementById('customerNameInput').value = isCredit ? `บิลเชื่อ: ${name || 'ระบุชื่อ'}` : 'ลูกค้าทั่วไป';
+      document.getElementById('customerNameInput').value = isCredit ? `บิลเชื่อ: ${name || 'ระบุชื่อผู้เชื่อ'}` : 'ลูกค้าทั่วไป (ไม่เก็บประวัติ)';
       renderCustomerDisplay();
     }
 
@@ -866,6 +1385,7 @@
           <td>${p.category}</td>
           <td class="num">฿${p.price.toLocaleString()}</td>
           <td class="num"><strong>${stock} ${p.unit}</strong></td>
+          <td>${stock <= p.minStock ? '<span class="badge badge-warning">ใกล้หมด</span>' : '<span class="badge badge-success">พร้อมขาย</span>'}</td>
           <td class="num"><button type="button" class="btn btn-secondary btn-sm" data-add="${p.sku}">+ เพิ่มลงบิล</button></td>
         </tr>`;
       }).join('');
@@ -875,11 +1395,14 @@
     function renderTransactions() {
       document.getElementById('transactionsTableBody').innerHTML = [...transactions].reverse().map(tx => `
         <tr>
-          <td><span class="sku-code">${tx.id}</span></td><td>${tx.time}</td>
+          <td><span class="sku-code">${tx.id}</span></td>
+          <td>${tx.time}</td>
           <td><span class="badge ${tx.type === 'OUT' ? 'badge-brand' : 'badge-success'}">${tx.type}</span></td>
-          <td><span class="sku-code">${tx.sku}</span></td><td>${tx.name}</td>
+          <td><span class="sku-code">${tx.sku}</span></td>
+          <td>${tx.name}</td>
           <td class="num">${tx.type === 'OUT' ? '-' : '+'}${tx.qty}</td>
-          <td class="num">฿${(tx.qty * tx.unitPrice).toLocaleString()}</td><td>${tx.actor}</td>
+          <td class="num">฿${(tx.qty * tx.unitPrice).toLocaleString()}</td>
+          <td>${tx.actor}</td>
         </tr>
       `).join('');
     }
@@ -911,16 +1434,20 @@
           found.paidDate = new Date().toLocaleDateString('th-TH');
           if (isCloudConnected) callGoogleSheetsApi('SETTLE_DEBT', { billNos: [found.billNo], paidDate: found.paidDate }).catch(() => {});
           renderBillsAndDebtors();
+          renderDynamicStoreHelpers();
           speakAndReply(`รับชำระหนี้บิล ${found.billNo} เรียบร้อยค่ะ`);
         }
       }));
 
       document.getElementById('billsTableBody').innerHTML = [...bills].reverse().map(b => `
         <tr>
-          <td><span class="sku-code">${b.billNo}</span></td><td>${b.dateStr} ${b.timeStr}</td>
+          <td><span class="sku-code">${b.billNo}</span></td>
+          <td>${b.dateStr} ${b.timeStr}</td>
+          <td>${b.quarterYear}</td>
           <td class="num"><strong>฿${b.netTotal.toLocaleString()}</strong></td>
           <td>${b.paymentStatus === 'UNPAID' ? '<span class="badge badge-warning">ค้างชำระ</span>' : '<span class="badge badge-success">จ่ายแล้ว</span>'}</td>
-          <td>${b.debtorName || 'ลูกค้าทั่วไป'}</td><td>${b.paidDate}</td>
+          <td>${b.debtorName || 'ลูกค้าทั่วไป'}</td>
+          <td>${b.paidDate}</td>
         </tr>
       `).join('');
     }
@@ -1034,12 +1561,13 @@
       renderBillsAndDebtors();
       renderTransactions();
       renderBill();
+      renderDynamicStoreHelpers();
       renderReceiptPreview();
       document.getElementById('receiptModal').classList.add('open');
       speakAndReply(`ออกบิล ${billNo} ยอดสุทธิ ${netTotal.toLocaleString()} บาท เรียบร้อยค่ะ`);
     }
 
-    // Event Listeners
+    // Bindings
     document.getElementById('switchCashierViewBtn').addEventListener('click', () => setViewMode('CASHIER'));
     document.getElementById('switchCustomerViewBtn').addEventListener('click', () => setViewMode('CUSTOMER'));
     document.getElementById('cfdBackToCashierBtn').addEventListener('click', () => setViewMode('CASHIER'));
@@ -1052,7 +1580,8 @@
 
     document.getElementById('readBillBtn').addEventListener('click', () => {
       if (currentBillItems.length === 0) { speakAndReply('ยังไม่มีสินค้าในบิลค่ะ'); return; }
-      speakAndReply(`ยอดชำระสุทธิ ${document.getElementById('billNetTotal').textContent} ค่ะ`);
+      const net = document.getElementById('billNetTotal').textContent;
+      speakAndReply(`ยอดชำระสุทธิ ${net} ค่ะ`);
     });
 
     document.getElementById('speakToggleBtn').addEventListener('click', e => {
@@ -1060,8 +1589,6 @@
       e.currentTarget.textContent = ttsEnabled ? '🔊 เสียงตอบรับ: เปิด' : '🔇 เสียงตอบรับ: ปิด';
     });
 
-    document.querySelectorAll('.debtor-chip').forEach(c => c.addEventListener('click', () => setPaymentMode('CREDIT', c.dataset.debtor)));
-    document.querySelectorAll('.chip-btn').forEach(c => c.addEventListener('click', () => processVoiceCommand(c.dataset.phrase)));
     document.getElementById('voiceCommandForm').addEventListener('submit', e => {
       e.preventDefault();
       processVoiceCommand(document.getElementById('commandInput').value);
@@ -1073,12 +1600,13 @@
       const sku = document.getElementById('newSku').value.trim().toUpperCase();
       const name = document.getElementById('newName').value.trim();
       const aliasStr = document.getElementById('newAlias').value.trim();
+      const unit = document.getElementById('newUnit').value.trim() || 'ชิ้น';
       const price = Number(document.getElementById('newPrice').value) || 0;
       const stock = Number(document.getElementById('newStock').value) || 0;
       const aliases = aliasStr ? aliasStr.split(',').map(s => s.trim()).filter(Boolean) : [name];
       if (!aliases.includes(name)) aliases.unshift(name);
 
-      const newProd = { sku, name, aliases, category: 'ทั่วไป', unit: 'ชิ้น', cost: Math.round(price * 0.65), price, minStock: 3 };
+      const newProd = { sku, name, aliases, category: 'คลังสินค้า', unit, cost: Math.round(price * 0.65), price, minStock: 3 };
       products.push(newProd);
       const initTx = stock > 0 ? { id: `TX-${1000 + transactions.length + 1}`, time: new Date().toTimeString().slice(0, 5), type: 'IN', sku, name, qty: stock, unitPrice: newProd.cost, actor: 'เพิ่มสินค้าใหม่' } : null;
       if (initTx) transactions.push(initTx);
@@ -1087,6 +1615,7 @@
       e.target.reset();
       renderProducts();
       renderTransactions();
+      renderDynamicStoreHelpers();
       speakAndReply(`เพิ่มสินค้า ${name} เรียบร้อยค่ะ`);
     });
 
@@ -1109,79 +1638,146 @@
     document.getElementById('printReceiptBtn').addEventListener('click', () => window.print());
     document.getElementById('closeReceiptBtn').addEventListener('click', () => document.getElementById('receiptModal').classList.remove('open'));
 
-    document.getElementById('openLoginSettingsBtn').addEventListener('click', () => { document.getElementById('loginOverlay').hidden = false; });
-    document.getElementById('useDemoModeBtn').addEventListener('click', () => { document.getElementById('loginOverlay').hidden = true; });
+    document.getElementById('openLoginSettingsBtn').addEventListener('click', () => {
+      document.getElementById('loginOverlay').hidden = false;
+    });
+    document.getElementById('useDemoModeBtn').addEventListener('click', () => {
+      activeGeminiKey = document.getElementById('geminiApiKeyInput').value.trim();
+      activeGeminiModel = document.getElementById('geminiModelSelect').value;
+      updateAiBadge();
+      document.getElementById('loginOverlay').hidden = true;
+    });
     document.getElementById('syncNowHeaderBtn').addEventListener('click', syncFromGoogleSheets);
 
     document.getElementById('loginSyncForm').addEventListener('submit', e => {
       e.preventDefault();
+      activeGeminiKey = document.getElementById('geminiApiKeyInput').value.trim();
+      activeGeminiModel = document.getElementById('geminiModelSelect').value;
       activeScriptUrl = document.getElementById('gasWebAppUrlInput').value.trim();
       activeSecretPin = document.getElementById('secretPinInput').value.trim();
       const mode = document.querySelector('input[name="persistMode"]:checked').value;
       try {
         localStorage.setItem('POS_GAS_URL', activeScriptUrl);
+        localStorage.setItem('POS_GEMINI_MODEL', activeGeminiModel);
         if (mode === 'REMEMBER') {
           localStorage.setItem('POS_SECRET_PIN', activeSecretPin);
+          localStorage.setItem('POS_GEMINI_KEY', activeGeminiKey);
         } else {
           localStorage.removeItem('POS_SECRET_PIN');
+          localStorage.removeItem('POS_GEMINI_KEY');
           sessionStorage.setItem('POS_SECRET_PIN', activeSecretPin);
+          sessionStorage.setItem('POS_GEMINI_KEY', activeGeminiKey);
         }
       } catch (err) {}
       syncFromGoogleSheets();
     });
 
     document.getElementById('clearSavedCredentialsBtn').addEventListener('click', () => {
-      try { localStorage.removeItem('POS_GAS_URL'); localStorage.removeItem('POS_SECRET_PIN'); sessionStorage.removeItem('POS_SECRET_PIN'); } catch (e) {}
+      try {
+        localStorage.removeItem('POS_GAS_URL');
+        localStorage.removeItem('POS_SECRET_PIN');
+        localStorage.removeItem('POS_GEMINI_KEY');
+        sessionStorage.removeItem('POS_SECRET_PIN');
+        sessionStorage.removeItem('POS_GEMINI_KEY');
+      } catch (e) {}
       document.getElementById('gasWebAppUrlInput').value = '';
       document.getElementById('secretPinInput').value = '';
+      document.getElementById('geminiApiKeyInput').value = '';
+      activeGeminiKey = '';
       isCloudConnected = false;
-      alert('ล้างค่ารหัสที่จำไว้เรียบร้อยแล้ว');
+      backendHasGemini = false;
+      updateAiBadge();
+      alert('ล้างค่ารหัสผ่านและ API Key ที่จำไว้ในเครื่องเรียบร้อยแล้ว');
     });
 
-    // Speech Recognition
+    const micBtn = document.getElementById('micToggleBtn');
+    const stateLabel = document.getElementById('voiceStateLabel');
+    const stateText = document.getElementById('voiceStateText');
+    const interimBox = document.getElementById('liveInterimBox');
+    const contCheckbox = document.getElementById('continuousMicCheckbox');
+    const directAudioCheckbox = document.getElementById('directGeminiAudioCheckbox');
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecordingDirectAudio = false;
+
+    async function toggleDirectGeminiAudioRecording() {
+      if (!activeGeminiKey && !(isCloudConnected && backendHasGemini)) {
+        alert('กรุณาเชื่อมต่อ Google Sheets ที่ตั้งค่า GEMINI_API_KEY ใน Script Properties หรือใส่คีย์ในหน้าตั้งค่าก่อนค่ะ');
+        document.getElementById('loginOverlay').hidden = false;
+        return;
+      }
+
+      if (isRecordingDirectAudio && mediaRecorder) {
+        mediaRecorder.stop();
+        return;
+      }
+
+      try {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = e => {
+          if (e.data && e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstart = () => {
+          isRecordingDirectAudio = true;
+          micBtn.classList.add('listening');
+          stateLabel.classList.add('listening');
+          stateText.textContent = '🔴 กำลังอัดเสียงส่งให้ Gemini... (พูดเสร็จแล้วแตะไมค์หรือกด Spacebar อีกครั้ง)';
+        };
+
+        mediaRecorder.onstop = async () => {
+          isRecordingDirectAudio = false;
+          micBtn.classList.remove('listening');
+          stateLabel.classList.remove('listening');
+          stream.getTracks().forEach(t => t.stop());
+
+          const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+          stateText.textContent = '⏳ กำลังส่งเสียงให้ Gemini เทียบกับคลังสินค้าของร้าน...';
+
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            try {
+              const base64Audio = String(reader.result).split(',')[1];
+              const intent = await parseCommandWithGemini({
+                audioBase64: base64Audio,
+                mimeType: blob.type || 'audio/webm'
+              });
+              stateText.textContent = '✅ Gemini ประมวลผลเสียงสำเร็จ';
+              applyStructuredPosIntent(intent);
+            } catch (err) {
+              stateText.textContent = '⚠️ ส่งเสียงให้ Gemini ไม่สำเร็จ: ' + err.message;
+            }
+          };
+          reader.readAsDataURL(blob);
+        };
+
+        mediaRecorder.start();
+      } catch (err) {
+        stateText.textContent = '⚠️ ไม่สามารถเปิดไมโครโฟนได้ กรุณากดอนุญาตไมโครโฟนที่แถบ URL';
+      }
+    }
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec = null;
+    let isListeningSpeech = false;
+    let userManuallyStopped = true;
+
     if (SpeechRecognition) {
-      const rec = new SpeechRecognition();
+      rec = new SpeechRecognition();
       rec.lang = 'th-TH';
       rec.interimResults = true;
       rec.maxAlternatives = 3;
 
-      const micBtn = document.getElementById('micToggleBtn');
-      const stateLabel = document.getElementById('voiceStateLabel');
-      const stateText = document.getElementById('voiceStateText');
-      const interimBox = document.getElementById('liveInterimBox');
-      const contCheckbox = document.getElementById('continuousMicCheckbox');
-
-      let isListening = false;
-      let userManuallyStopped = true;
-
-      function toggleMicrophone() {
-        if (isListening) {
-          userManuallyStopped = true;
-          try { rec.stop(); } catch (e) {}
-        } else {
-          userManuallyStopped = false;
-          if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-          rec.continuous = contCheckbox.checked;
-          try { rec.start(); } catch (e) {}
-        }
-      }
-
-      micBtn.addEventListener('click', toggleMicrophone);
-
-      window.addEventListener('keydown', e => {
-        const tag = (document.activeElement && document.activeElement.tagName) || '';
-        if (e.code === 'Space' && tag !== 'INPUT' && tag !== 'TEXTAREA' && document.getElementById('loginOverlay').hidden) {
-          e.preventDefault();
-          toggleMicrophone();
-        }
-      });
-
       rec.onstart = () => {
-        isListening = true;
+        isListeningSpeech = true;
         micBtn.classList.add('listening');
         stateLabel.classList.add('listening');
-        stateText.textContent = '🔴 กำลังฟังเสียงภาษาไทย...';
+        stateText.textContent = '🔴 กำลังฟังเสียงภาษาไทย... (พูดชื่อสินค้าตามตารางคลังสินค้าได้เลย)';
       };
 
       rec.onresult = ev => {
@@ -1189,26 +1785,42 @@
         let finalTxt = '';
         for (let i = ev.resultIndex; i < ev.results.length; i++) {
           const transcript = ev.results[i][0].transcript;
-          if (ev.results[i].isFinal) finalTxt += transcript + ' ';
-          else interimTxt += transcript;
+          if (ev.results[i].isFinal) {
+            finalTxt += transcript + ' ';
+          } else {
+            interimTxt += transcript;
+          }
         }
+
         if (interimTxt) {
           interimBox.hidden = false;
           interimBox.textContent = '👂 กำลังได้ยิน: "' + interimTxt + '"';
           document.getElementById('commandInput').value = interimTxt;
         }
+
         if (finalTxt.trim()) {
           interimBox.hidden = false;
-          interimBox.textContent = '✅ จับคำสั่งได้: "' + finalTxt.trim() + '"';
+          interimBox.textContent = '✅ จับคำพูดได้: "' + finalTxt.trim() + '"';
           document.getElementById('commandInput').value = finalTxt.trim();
           processVoiceCommand(finalTxt.trim());
         }
       };
 
+      rec.onerror = ev => {
+        if (ev.error === 'not-allowed') {
+          userManuallyStopped = true;
+          stateText.textContent = '⚠️ กรุณากดอนุญาตไมโครโฟน (Allow) ที่แถบ URL ด้านบนของเบราว์เซอร์';
+        }
+      };
+
       rec.onend = () => {
-        isListening = false;
-        if (!userManuallyStopped && contCheckbox.checked) {
-          setTimeout(() => { if (!userManuallyStopped) { try { rec.start(); } catch (e) {} } }, 250);
+        isListeningSpeech = false;
+        if (!userManuallyStopped && contCheckbox.checked && !directAudioCheckbox.checked) {
+          setTimeout(() => {
+            if (!userManuallyStopped) {
+              try { rec.start(); } catch (e) {}
+            }
+          }, 250);
         } else {
           micBtn.classList.remove('listening');
           stateLabel.classList.remove('listening');
@@ -1217,10 +1829,53 @@
       };
     }
 
+    function handleMicTrigger() {
+      if (directAudioCheckbox.checked) {
+        toggleDirectGeminiAudioRecording();
+        return;
+      }
+      if (!rec) {
+        alert('เบราว์เซอร์นี้ไม่รองรับ Web Speech API กรุณาติ๊กช่อง "ส่งเสียงให้ Gemini ฟังโดยตรง" แทนค่ะ');
+        return;
+      }
+      if (isListeningSpeech) {
+        userManuallyStopped = true;
+        try { rec.stop(); } catch (e) {}
+      } else {
+        userManuallyStopped = false;
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        rec.continuous = contCheckbox.checked;
+        try { rec.start(); } catch (e) {}
+      }
+    }
+
+    micBtn.addEventListener('click', handleMicTrigger);
+
+    window.addEventListener('keydown', e => {
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (e.code === 'Space' && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT' && document.getElementById('loginOverlay').hidden) {
+        e.preventDefault();
+        handleMicTrigger();
+      }
+    });
+
     try {
       const savedUrl = localStorage.getItem('POS_GAS_URL') || '';
       const savedPin = localStorage.getItem('POS_SECRET_PIN') || sessionStorage.getItem('POS_SECRET_PIN') || '';
+      const savedGemKey = localStorage.getItem('POS_GEMINI_KEY') || sessionStorage.getItem('POS_GEMINI_KEY') || '';
+      const savedGemModel = localStorage.getItem('POS_GEMINI_MODEL') || 'gemini-2.5-flash';
+
       if (savedUrl) document.getElementById('gasWebAppUrlInput').value = savedUrl;
+      if (savedGemKey) {
+        document.getElementById('geminiApiKeyInput').value = savedGemKey;
+        activeGeminiKey = savedGemKey;
+      }
+      if (savedGemModel) {
+        document.getElementById('geminiModelSelect').value = savedGemModel;
+        activeGeminiModel = savedGemModel;
+      }
+      updateAiBadge();
+
       if (savedUrl && savedPin) {
         activeScriptUrl = savedUrl;
         activeSecretPin = savedPin;
@@ -1232,6 +1887,7 @@
     renderBillsAndDebtors();
     renderTransactions();
     renderBill();
+    renderDynamicStoreHelpers();
   </script>
 </body>
 </html>
