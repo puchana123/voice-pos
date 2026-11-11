@@ -1658,18 +1658,6 @@
         speakAndReply(`เพิ่มสินค้า ${name} จำนวน ${stock} ${unit} เรียบร้อยค่ะ`);
       });
 
-  
-        e.target.reset();
-        document.getElementById('newCategory').value = 'ทั่วไป';
-        document.getElementById('newUnit').value = 'ชิ้น';
-        document.getElementById('newCost').value = '0';
-        renderProducts();
-        renderTransactions();
-        renderDynamicStoreHelpers();
-        speakAndReply(`เพิ่มสินค้า ${name} จำนวน ${stock} ${unit} เรียบร้อยค่ะ`);
-    });
-
-
     document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
